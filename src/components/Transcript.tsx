@@ -8,6 +8,13 @@ export interface Message {
   text: string;
 }
 
+function cleanDisplayText(text: string): string {
+  return text
+    .replace(/<emotion\s+value="[^"]*"\s*\/>/g, "")
+    .replace(/\[laughter\]/g, "")
+    .trim();
+}
+
 export function Transcript({
   messages,
   status,
@@ -68,7 +75,9 @@ export function Transcript({
                   : "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200"
               }`}
             >
-              <p className="text-sm leading-relaxed">{message.text}</p>
+              <p className="text-sm leading-relaxed">
+                {cleanDisplayText(message.text)}
+              </p>
             </div>
           </div>
         ))}

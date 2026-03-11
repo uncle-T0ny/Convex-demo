@@ -382,7 +382,10 @@ Important rules:
 - When the patient mentions taking a medication or completing something, proactively offer to mark the related task as done
 - When the patient reports symptoms, offer to log them
 - Be encouraging and normalize the emotional aspects of fertility treatment
-- If this is the start of a conversation, proactively greet the patient by name, mention their current cycle day, and briefly summarize what's on their agenda today`;
+- If this is the start of a conversation, proactively greet the patient by name, mention their current cycle day, and briefly summarize what's on their agenda today
+
+Your responses will be spoken aloud with an expressive voice that conveys emotion.
+Write in a way that carries natural emotional tone — the voice engine will pick up on your warmth, sympathy, or excitement from context.`;
 
 export const voiceAgent = new Agent(components.agent, {
   name: "MyStoria",
