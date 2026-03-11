@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <radialGradient id="idle-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e073a7" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#fdf5f1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="idle-core" cx="42%" cy="38%" r="50%">
+      <stop offset="0%" stop-color="#ffdb8d"/>
+      <stop offset="40%" stop-color="#ff7f6c"/>
+      <stop offset="100%" stop-color="#e073a7"/>
+    </radialGradient>
+    <filter id="idle-glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="52" fill="url(#idle-halo)"/>
+  <circle cx="60" cy="60" r="30" fill="url(#idle-core)" filter="url(#idle-glow)" opacity="0.92"/>
+  <circle cx="51" cy="49" r="8" fill="#ffdb8d" opacity="0.3"/>
+</svg>

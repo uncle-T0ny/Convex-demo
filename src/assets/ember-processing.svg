@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <radialGradient id="think-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e073a7" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#fdf5f1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="think-core" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#5e1d49" stop-opacity="0.4"/>
+      <stop offset="30%" stop-color="#ff7f6c"/>
+      <stop offset="65%" stop-color="#7e7bff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#ff7f6c"/>
+    </radialGradient>
+    <filter id="think-glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="52" fill="url(#think-halo)"/>
+  <circle cx="60" cy="60" r="34" fill="url(#think-core)" filter="url(#think-glow)" opacity="0.95"/>
+  <circle cx="60" cy="60" r="22" fill="none" stroke="#7e7bff" stroke-width="1" opacity="0.25"/>
+  <circle cx="60" cy="60" r="14" fill="none" stroke="#7e7bff" stroke-width="0.8" opacity="0.15"/>
+</svg>
