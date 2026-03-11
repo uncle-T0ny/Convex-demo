@@ -30,6 +30,9 @@ export function Header({
           </button>
         )}
         <h1 className="text-xl font-semibold text-white">MyStoria</h1>
+        <span className="rounded-full bg-coral px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+          Demo
+        </span>
       </div>
       <div className="flex items-center gap-2">
         <Mascot status={status} size="sm" />
