@@ -28,8 +28,8 @@ export function StatusPanel({
   return (
     <div className="flex h-full flex-col overflow-y-auto bg-white">
       {/* Header with close button on mobile */}
-      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+      <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+        <span className="text-sm font-semibold uppercase tracking-wide text-gray-400">
           Dashboard
         </span>
         {onClose && (
@@ -47,45 +47,45 @@ export function StatusPanel({
 
       {/* Cycle Day Badge */}
       {profile && (
-        <div className="border-b border-gray-100 px-4 py-3">
+        <div className="border-b border-gray-200 px-5 py-4">
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-purple px-3 py-1 text-sm font-bold text-white">
               Day {profile.cycleDay}
             </span>
-            <span className="text-xs text-gray-500">{profile.protocol}</span>
+            <span className="text-sm text-gray-500">{profile.protocol}</span>
           </div>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-sm text-gray-400">
             {profile.name} &middot; {profile.clinicName}
           </p>
         </div>
       )}
 
       {/* Today's Tasks */}
-      <div className="border-b border-gray-100 px-4 py-3">
-        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+      <div className="border-b border-gray-200 px-5 py-4">
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
           Today's Tasks
         </h3>
         {todayTasks.length === 0 ? (
-          <p className="text-xs text-gray-400">No tasks for today</p>
+          <p className="text-sm text-gray-400">No tasks for today</p>
         ) : (
-          <ul className="space-y-1.5">
+          <ul className="space-y-2.5">
             {[...pendingTasks, ...doneTasks].map((task) => (
               <li key={task._id} className="flex items-start gap-2">
                 {task.status === "done" ? (
-                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-teal" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="mt-0.5 h-5 w-5 shrink-0 text-teal" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 ) : task.status === "skipped" ? (
-                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="mt-0.5 h-5 w-5 shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 ) : (
-                  <svg className="mt-0.5 h-4 w-4 shrink-0 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="mt-0.5 h-5 w-5 shrink-0 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="9" strokeWidth="2" />
                   </svg>
                 )}
                 <span
-                  className={`text-xs leading-snug ${
+                  className={`text-sm leading-normal ${
                     task.status === "done"
                       ? "text-gray-400 line-through"
                       : "text-gray-700"
@@ -102,22 +102,22 @@ export function StatusPanel({
             ))}
           </ul>
         )}
-        <p className="mt-2 text-xs text-gray-400">
+        <p className="mt-2 text-sm text-gray-400">
           {doneTasks.length}/{todayTasks.length} completed
         </p>
       </div>
 
       {/* Next Appointment */}
       {nextAppointment && (
-        <div className="border-b border-gray-100 px-4 py-3">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+        <div className="border-b border-gray-200 px-5 py-4">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
             Next Appointment
           </h3>
-          <div className="rounded-lg border border-purple-light/30 bg-purple/5 p-2.5">
-            <p className="text-xs font-medium text-purple">
+          <div className="rounded-lg border border-purple-light/30 bg-purple/5 p-3.5">
+            <p className="text-sm font-medium text-purple">
               {nextAppointment.title}
             </p>
-            <p className="mt-0.5 text-xs text-gray-500">
+            <p className="mt-0.5 text-sm text-gray-500">
               {new Date(nextAppointment.dateTime).toLocaleDateString(undefined, {
                 weekday: "short",
                 month: "short",
@@ -130,7 +130,7 @@ export function StatusPanel({
               })}
             </p>
             {nextAppointment.location && (
-              <p className="mt-0.5 text-xs text-gray-400">
+              <p className="mt-0.5 text-sm text-gray-400">
                 {nextAppointment.location}
               </p>
             )}

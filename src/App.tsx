@@ -109,7 +109,7 @@ export function App() {
 
       {/* Status Panel */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-72 transform border-r border-gray-200 bg-white transition-transform md:relative md:z-auto md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-30 w-80 transform border-r border-gray-200 bg-white transition-transform md:relative md:z-auto md:translate-x-0 ${
           panelOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -125,24 +125,28 @@ export function App() {
           status={status}
           onTogglePanel={() => setPanelOpen((p) => !p)}
         />
-        <Transcript messages={messages} status={status} />
-        <div className="border-t border-gray-200 bg-white p-4">
-          <div className="flex items-center gap-3">
-            {speechSupported && (
-              <VoiceButton
-                status={status}
-                onClick={handleMicToggle}
-                disabled={!isReady}
-              />
-            )}
-            <TextInput
-              onSend={handleSend}
-              disabled={
-                !isReady ||
-                status === "processing" ||
-                status === "speaking"
-              }
-            />
+        <div className="flex flex-1 justify-center overflow-hidden">
+          <div className="flex w-full max-w-3xl flex-col">
+            <Transcript messages={messages} status={status} />
+            <div className="border-t border-gray-200 bg-white p-4">
+              <div className="flex items-center gap-3">
+                {speechSupported && (
+                  <VoiceButton
+                    status={status}
+                    onClick={handleMicToggle}
+                    disabled={!isReady}
+                  />
+                )}
+                <TextInput
+                  onSend={handleSend}
+                  disabled={
+                    !isReady ||
+                    status === "processing" ||
+                    status === "speaking"
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
