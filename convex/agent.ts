@@ -42,7 +42,7 @@ const getTodaysTasks: AnyTool = createTool({
 const getTasksForDate: AnyTool = createTool({
   description: "Get treatment tasks for a specific date",
   args: z.object({
-    date: z.string().describe("ISO date string (YYYY-MM-DD)"),
+    date: z.string().max(10).describe("ISO date string (YYYY-MM-DD)"),
   }),
   handler: async (ctx: Ctx, args: { date: string }) => {
     const sessionId = await resolveSessionId(ctx);
@@ -59,9 +59,11 @@ const completeTaskTool: AnyTool = createTool({
   args: z.object({
     titleFragment: z
       .string()
+      .max(200)
       .describe("Part of the task title to match, e.g. 'prenatal'"),
     date: z
       .string()
+      .max(10)
       .optional()
       .describe("Optional ISO date, defaults to today"),
   }),
@@ -86,10 +88,10 @@ const createTaskTool: AnyTool = createTool({
   description:
     "Create a new treatment task (e.g. 'remind me to call the pharmacy tomorrow')",
   args: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    scheduledDate: z.string().describe("ISO date string (YYYY-MM-DD)"),
-    scheduledTime: z.string().optional().describe("Time in HH:MM format"),
+    title: z.string().max(200),
+    description: z.string().max(1000).optional(),
+    scheduledDate: z.string().max(10).describe("ISO date string (YYYY-MM-DD)"),
+    scheduledTime: z.string().max(5).optional().describe("Time in HH:MM format"),
     category: z
       .enum(["medication", "appointment", "logging", "other"])
       .default("other"),
@@ -120,9 +122,10 @@ const createTaskTool: AnyTool = createTool({
 const skipTaskTool: AnyTool = createTool({
   description: "Mark a treatment task as skipped",
   args: z.object({
-    titleFragment: z.string().describe("Part of the task title to match"),
+    titleFragment: z.string().max(200).describe("Part of the task title to match"),
     date: z
       .string()
+      .max(10)
       .optional()
       .describe("Optional ISO date, defaults to today"),
   }),
@@ -178,10 +181,11 @@ const logSymptomsTool: AnyTool = createTool({
   description: "Log symptoms and mood for today",
   args: z.object({
     symptoms: z
-      .array(z.string())
+      .array(z.string().max(100))
+      .max(20)
       .describe("List of symptoms, e.g. ['bloating', 'fatigue']"),
-    mood: z.string().optional().describe("Current mood"),
-    notes: z.string().optional(),
+    mood: z.string().max(200).optional().describe("Current mood"),
+    notes: z.string().max(1000).optional(),
   }),
   handler: async (
     ctx: Ctx,
@@ -239,8 +243,9 @@ const addAppointmentQuestionTool: AnyTool = createTool({
   args: z.object({
     appointmentTitleFragment: z
       .string()
+      .max(200)
       .describe("Part of the appointment title"),
-    question: z.string().describe("The question to add"),
+    question: z.string().max(500).describe("The question to add"),
   }),
   handler: async (
     ctx: Ctx,
@@ -267,6 +272,7 @@ const generateAppointmentSummaryTool: AnyTool = createTool({
   args: z.object({
     appointmentTitleFragment: z
       .string()
+      .max(200)
       .optional()
       .describe(
         "Part of the appointment title; if omitted, uses the next upcoming appointment",
