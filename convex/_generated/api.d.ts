@@ -12,6 +12,7 @@ import type * as agent from "../agent.js";
 import type * as chat from "../chat.js";
 import type * as dashboard from "../dashboard.js";
 import type * as data from "../data.js";
+import type * as lib_dates from "../lib/dates.js";
 import type * as sessions from "../sessions.js";
 
 import type {
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   dashboard: typeof dashboard;
   data: typeof data;
+  "lib/dates": typeof lib_dates;
   sessions: typeof sessions;
 }>;
 
