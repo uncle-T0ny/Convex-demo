@@ -10,8 +10,9 @@ export function TextInput({ onSend, disabled }: TextInputProps) {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!text.trim() || disabled) return;
-    onSend(text);
+    const trimmed = text.trim();
+    if (!trimmed || disabled) return;
+    onSend(trimmed);
     setText("");
   };
 
