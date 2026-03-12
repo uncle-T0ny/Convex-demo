@@ -42,7 +42,7 @@
 | **7. Security** | | | | | |
 | 7.1 | Fixed | `convex/chat.ts` | Deprecated `synthesizeSpeech` still client-callable, exposes API key | Principle of least privilege; use `internalAction` | 8b2fdc3 |
 | 7.2 | Fixed | `convex/agent.ts` | No input length limits on agent tool Zod schemas | Input validation; OWASP — injection prevention | 602e59d |
-| 7.3 | Open | `convex/data.ts` | No date string format validation in backend mutations | Input validation at system boundaries | — |
+| 7.3 | Fixed | `convex/data.ts` | No date string format validation in backend mutations | Input validation at system boundaries | bd40f7a |
 | 7.4 | Skipped | `convex/sessions.ts`, `convex/chat.ts`, `convex/dashboard.ts` | No authentication — all public mutations/queries callable by any client | OWASP A01 — Broken Access Control | — (demo app, auth requires infrastructure) |
 | 7.5 | Fixed | `convex/chat.ts:14` | No prompt length limit on `sendMessage` mutation — `v.string()` accepts arbitrary size | OWASP A04 — Insecure Design; input validation | 2f7083c |
 | 7.6 | Open | `convex/data.ts:209-218` | Unbounded array growth in `addPrepQuestion` — no limit on `prepQuestions` array size | Resource exhaustion prevention | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 153 Open, 0 In-progress, 4 Fixed, 2 Skipped
+**Totals:** 159 issues — 152 Open, 0 In-progress, 5 Fixed, 2 Skipped
 
 ---
 

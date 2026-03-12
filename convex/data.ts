@@ -114,6 +114,12 @@ export const createTask = internalMutation({
     category: v.string(),
   },
   handler: async (ctx, args) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(args.scheduledDate)) {
+      throw new Error("Invalid date format — expected YYYY-MM-DD");
+    }
+    if (args.scheduledTime && !/^\d{2}:\d{2}$/.test(args.scheduledTime)) {
+      throw new Error("Invalid time format — expected HH:MM");
+    }
     return await ctx.db.insert("treatmentTasks", {
       ...args,
       status: "pending",
@@ -156,6 +162,9 @@ export const logSymptoms = internalMutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(args.date)) {
+      throw new Error("Invalid date format — expected YYYY-MM-DD");
+    }
     return await ctx.db.insert("symptomLogs", {
       ...args,
       loggedAt: Date.now(),
