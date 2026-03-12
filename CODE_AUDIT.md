@@ -36,7 +36,7 @@
 | 5.3 | Open | `convex/agent.ts` | Inconsistent tool variable naming (`Tool` suffix vs. none) | Consistent naming convention | — |
 | **6. Bugs & Race Conditions** | | | | | |
 | 6.1 | Fixed | `src/hooks/useTextToSpeech.ts` | Background receive loop not cancelled on rapid `prepare()` calls | Cancel stale async work; AbortController | 841e8e5 |
-| 6.2 | Open | `src/hooks/useTextToSpeech.ts` | Unsafe `window.speechSynthesis` access — missing null check in `play()` | Defensive programming; consistent null checks | — |
+| 6.2 | Fixed | `src/hooks/useTextToSpeech.ts` | Unsafe `window.speechSynthesis` access — missing null check in `play()` | Defensive programming; consistent null checks | 05c04d9 |
 | 6.3 | Open | `src/hooks/useSpeechRecognition.ts` | Error events swallowed — `.error` property discarded | Log/expose error details | — |
 | 6.4 | Open | `src/hooks/useSpeechRecognition.ts` | `onResult`/`onEnd` in deps recreate `start` every render | Stabilize callbacks with refs | — |
 | **7. Security** | | | | | |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 143 Open, 0 In-progress, 14 Fixed, 2 Skipped
+**Totals:** 159 issues — 142 Open, 0 In-progress, 15 Fixed, 2 Skipped
 
 ---
 

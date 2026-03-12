@@ -297,7 +297,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.onend = () => onEndRef.current?.();
       utterance.onerror = () => onEndRef.current?.();
-      window.speechSynthesis.speak(utterance);
+      window.speechSynthesis?.speak(utterance);
       return;
     }
 
