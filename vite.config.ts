@@ -7,6 +7,10 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Force Cartesia SDK to use native browser WebSocket instead of Node.js ws
+      ws: path.resolve(__dirname, "src/lib/ws-browser-shim.cjs"),
+      // Stub Node.js stream for Cartesia backcompat modules
+      stream: path.resolve(__dirname, "src/lib/stream-browser-shim.cjs"),
     },
   },
   build: {

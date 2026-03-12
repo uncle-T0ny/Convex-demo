@@ -8,6 +8,7 @@ export default defineConfig({
     },
   },
   test: {
+    exclude: ["e2e/**", "node_modules/**"],
     environmentMatchGlobs: [
       ["convex/**", "edge-runtime"],
       ["src/**", "jsdom"],
