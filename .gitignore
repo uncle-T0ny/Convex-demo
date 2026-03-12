@@ -140,3 +140,10 @@ vite.config.ts.timestamp-*
 
 .idea
 temp/*
+
+# macOS
+.DS_Store
+
+# Playwright
+playwright-report/
+test-results/
