@@ -10,7 +10,7 @@
 | # | Status | File(s) | Description | Best Practice / Rule | Fix Commit |
 |---|--------|---------|-------------|---------------------|------------|
 | **1. Unused Code** | | | | | |
-| 1.1 | Open | `convex/chat.ts` | Deprecated `synthesizeSpeech` action — dead code, client-callable | Dead code elimination; YAGNI | — |
+| 1.1 | Fixed | `convex/chat.ts` | Deprecated `synthesizeSpeech` action — dead code, client-callable | Dead code elimination; YAGNI | 8b2fdc3 |
 | 1.2 | Open | `package.json` | `convex-helpers` package never imported | Remove unused dependencies | — |
 | 1.3 | Open | `convex/agent.ts`, `package.json` | `@ai-sdk/cerebras` dead code path — import + switch case never reached | YAGNI; tree-shake unused providers | — |
 | **2. Duplicated Code** | | | | | |
@@ -40,7 +40,7 @@
 | 6.3 | Open | `src/hooks/useSpeechRecognition.ts` | Error events swallowed — `.error` property discarded | Log/expose error details | — |
 | 6.4 | Open | `src/hooks/useSpeechRecognition.ts` | `onResult`/`onEnd` in deps recreate `start` every render | Stabilize callbacks with refs | — |
 | **7. Security** | | | | | |
-| 7.1 | Open | `convex/chat.ts` | Deprecated `synthesizeSpeech` still client-callable, exposes API key | Principle of least privilege; use `internalAction` | — |
+| 7.1 | Fixed | `convex/chat.ts` | Deprecated `synthesizeSpeech` still client-callable, exposes API key | Principle of least privilege; use `internalAction` | 8b2fdc3 |
 | 7.2 | Open | `convex/agent.ts` | No input length limits on agent tool Zod schemas | Input validation; OWASP — injection prevention | — |
 | 7.3 | Open | `convex/data.ts` | No date string format validation in backend mutations | Input validation at system boundaries | — |
 | 7.4 | Open | `convex/sessions.ts`, `convex/chat.ts`, `convex/dashboard.ts` | No authentication — all public mutations/queries callable by any client | OWASP A01 — Broken Access Control | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 159 Open, 0 In-progress, 0 Fixed
+**Totals:** 159 issues — 157 Open, 0 In-progress, 2 Fixed
 
 ---
 

@@ -66,49 +66,6 @@ export const generateGreeting = internalAction({
   },
 });
 
-/** @deprecated Use getTtsConfig + client-side Cartesia SDK WebSocket instead */
-export const synthesizeSpeech = action({
-  args: { text: v.string() },
-  handler: async (_ctx, { text }) => {
-    const cleaned = text.replace(/[^\p{L}\p{N}]/gu, "").trim();
-    if (!cleaned) throw new Error("Transcript is empty or contains only punctuation");
-
-    const apiKey = process.env.CARTESIA_API_KEY;
-    if (!apiKey) throw new Error("CARTESIA_API_KEY not configured");
-
-    const response = await fetch("https://api.cartesia.ai/tts/bytes", {
-      method: "POST",
-      headers: {
-        "X-API-Key": apiKey,
-        "Cartesia-Version": "2025-04-16",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model_id: "sonic-3",
-        transcript: text,
-        voice: {
-          mode: "id",
-          id:
-            process.env.CARTESIA_VOICE_ID ??
-            "156fb8d2-335b-4950-9cb3-a2d33befec77",
-        },
-        language: "en",
-        output_format: {
-          container: "wav",
-          encoding: "pcm_s16le",
-          sample_rate: 44100,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const body = await response.text();
-      throw new Error(`Cartesia API error ${response.status}: ${body}`);
-    }
-    return await response.arrayBuffer();
-  },
-});
-
 export const getTtsConfig = action({
   args: {},
   handler: async () => {
