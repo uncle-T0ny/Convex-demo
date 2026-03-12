@@ -45,6 +45,16 @@ function cleanDisplayText(text: string): string {
     .trim();
 }
 
+function LoadingDots() {
+  return (
+    <div className="flex gap-1">
+      <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0ms]" />
+      <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:150ms]" />
+      <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:300ms]" />
+    </div>
+  );
+}
+
 export function Transcript({
   messages,
   status,
@@ -105,11 +115,7 @@ export function Transcript({
         <div className="flex items-end gap-2">
           <Mascot status="processing" size="md" />
           <div className="rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-gray-200">
-            <div className="flex gap-1">
-              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:0ms]" />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:150ms]" />
-              <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:300ms]" />
-            </div>
+            <LoadingDots />
           </div>
         </div>
       </div>

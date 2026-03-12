@@ -16,7 +16,7 @@
 | **2. Duplicated Code** | | | | | |
 | 2.1 | Fixed | `convex/agent.ts`, `convex/data.ts`, `convex/dashboard.ts` | Date formatting — 3 implementations of `toISOString().split("T")[0]` | DRY — extract shared utility | 2b56fef |
 | 2.2 | Skipped | `convex/data.ts`, `convex/dashboard.ts` | Appointment filter+sort duplicated verbatim | DRY — reuse existing query | — (resolved by 11.4 compound index; queries can't call ctx.runQuery) |
-| 2.3 | Open | `src/components/Transcript.tsx` | Animated dots JSX duplicated (lines 108–112, 200–204) | DRY — extract component | — |
+| 2.3 | Fixed | `src/components/Transcript.tsx` | Animated dots JSX duplicated (lines 108–112, 200–204) | DRY — extract component | 125abcd |
 | 2.4 | Open | `src/__tests__/hooks/useTextToSpeech.test.ts`, `src/__tests__/lib/StreamingAudioPlayer.test.ts` | Audio mock classes duplicated across test files | DRY — shared test utilities | — |
 | **3. Misplaced Helpers** | | | | | |
 | 3.1 | Open | `src/components/Transcript.tsx` | `cleanDisplayText()` — pure text processing in component file | Separation of concerns; testability | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 129 Open, 0 In-progress, 27 Fixed, 3 Skipped
+**Totals:** 159 issues — 128 Open, 0 In-progress, 28 Fixed, 3 Skipped
 
 ---
 
