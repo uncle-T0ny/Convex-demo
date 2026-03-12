@@ -12,6 +12,7 @@ test.describe("Voice Button", () => {
     );
 
     await page.goto("/");
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
     await expect(page.getByPlaceholder("Type a message...")).toBeEnabled({
       timeout: 15000,
     });
@@ -27,6 +28,7 @@ test.describe("Voice Button", () => {
     );
 
     await page.goto("/");
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
     await expect(page.getByPlaceholder("Type a message...")).toBeEnabled({
       timeout: 15000,
     });
@@ -44,12 +46,12 @@ test.describe("Voice Button", () => {
       "Web Speech API only available in Chromium",
     );
 
-    // Clear session to force fresh initialization
     await page.goto("/");
     await page.evaluate(() =>
       localStorage.removeItem("mystoria-session-id"),
     );
     await page.reload();
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
 
     // Button should exist but be disabled initially
     const micButton = page.getByRole("button", { name: "Start listening" });
@@ -69,6 +71,7 @@ test.describe("Voice Button", () => {
     );
 
     await page.goto("/");
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
     await expect(page.getByPlaceholder("Type a message...")).toBeVisible({
       timeout: 15000,
     });

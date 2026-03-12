@@ -10,11 +10,11 @@ test.describe("Page Load", () => {
       page.getByRole("heading", { name: "MyStoria" }),
     ).toBeVisible();
     await expect(page.getByText("Demo")).toBeVisible();
-    await expect(page.getByText("Ready")).toBeVisible({ timeout: 15000 });
   });
 
-  test("should render the text input and send button", async ({ page }) => {
+  test("should render the text input and send button after start", async ({ page }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
 
     await expect(
       page.getByPlaceholder("Type a message..."),
@@ -26,6 +26,7 @@ test.describe("Page Load", () => {
 
   test("should enable text input once session is ready", async ({ page }) => {
     await page.goto("/");
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
 
     await expect(page.getByPlaceholder("Type a message...")).toBeEnabled({
       timeout: 15000,
@@ -42,6 +43,7 @@ test.describe("Page Load", () => {
     });
 
     await page.goto("/");
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
     await expect(page.getByText("Ready")).toBeVisible({ timeout: 15000 });
 
     expect(errors).toEqual([]);

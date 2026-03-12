@@ -72,8 +72,8 @@
 | 11.4 | Open | `convex/schema.ts` | Missing compound index `["sessionId", "dateTime"]` on appointments | Index-backed filtering > JS filtering | — |
 | 11.5 | Open | `convex/data.ts` | `getAllTasks` returns in arbitrary order — used for timeline | Explicit sort or ordered index | — |
 | **12. E2E Test Issues** | | | | | |
-| 12.1 | Open | `e2e/*.spec.ts` (all 7) | All E2E tests incompatible with "Tap to start" flow — will timeout | Tests must match app UX flow | — |
-| 12.2 | Open | `e2e/session.spec.ts` | Session restore test contradicts "always fresh session" logic | Test actual behavior, not assumed | — |
+| 12.1 | Fixed | `e2e/*.spec.ts` (all 7) | All E2E tests incompatible with "Tap to start" flow — will timeout | Tests must match app UX flow | 0672c84 |
+| 12.2 | Fixed | `e2e/session.spec.ts` | Session restore test contradicts "always fresh session" logic | Test actual behavior, not assumed | 0672c84 |
 | 12.3 | Open | `e2e/text-chat.spec.ts`, `e2e/session.spec.ts` | CSS class selectors couple tests to Tailwind implementation | Use `data-testid` or semantic selectors | — |
 | 12.4 | Open | `e2e/latency.spec.ts` | Latency test has no failure threshold — can never regress | Set performance budgets | — |
 | **13. Frontend Bugs** | | | | | |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 146 Open, 0 In-progress, 11 Fixed, 2 Skipped
+**Totals:** 159 issues — 144 Open, 0 In-progress, 13 Fixed, 2 Skipped
 
 ---
 

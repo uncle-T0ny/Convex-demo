@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Text Chat", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    // Wait for session to be fully ready
+    await page.getByRole("button", { name: "Tap to start conversation" }).click();
     await expect(page.getByPlaceholder("Type a message...")).toBeEnabled({
       timeout: 15000,
     });
