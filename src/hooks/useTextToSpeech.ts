@@ -30,6 +30,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
   const wsRef = useRef<CartesiaWS | null>(null);
   const ttsCtxRef = useRef<CartesiaContext | null>(null);
   const fallbackTextRef = useRef<string | null>(null);
+  const generationRef = useRef(0);
   const [isReady, setIsReady] = useState(false);
 
   const onEndRef = useRef(onEnd);
@@ -38,6 +39,9 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
   onMetricsRef.current = onMetrics;
 
   const stop = useCallback(() => {
+    // Invalidate any in-flight receive loops
+    generationRef.current++;
+
     // Stop audio player
     playerRef.current?.stop();
     playerRef.current = null;
@@ -142,9 +146,11 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
 
       // Background receive loop — plays audio chunks as they arrive
       const loopWs = wsRef.current;
+      const gen = generationRef.current;
       (async () => {
         try {
           for await (const event of ttsCtx.receive()) {
+            if (gen !== generationRef.current) break;
             if (event.type === "chunk" && event.audio) {
               const bytes =
                 event.audio instanceof ArrayBuffer
@@ -165,10 +171,9 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
           }
         } catch (e) {
           if (import.meta.env.DEV) console.warn("[TTS] receive loop ended:", e);
-          // Only null out wsRef if it's still the same connection
           if (wsRef.current === loopWs) wsRef.current = null;
         }
-        player.markStreamComplete();
+        if (gen === generationRef.current) player.markStreamComplete();
       })();
 
       setIsReady(true);
@@ -234,9 +239,11 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
 
           // Background receive loop — buffers audio chunks
           const loopWs = wsRef.current;
+          const gen = generationRef.current;
           (async () => {
             try {
               for await (const event of ttsCtx.receive()) {
+                if (gen !== generationRef.current) break;
                 if (event.type === "chunk" && event.audio) {
                   const bytes =
                     event.audio instanceof ArrayBuffer
@@ -259,7 +266,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
               if (import.meta.env.DEV) console.warn("[TTS] receive loop ended:", e);
               if (wsRef.current === loopWs) wsRef.current = null;
             }
-            player.markStreamComplete();
+            if (gen === generationRef.current) player.markStreamComplete();
           })();
 
           // Send complete text and signal end of input
