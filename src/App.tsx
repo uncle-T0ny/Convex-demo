@@ -26,6 +26,7 @@ export function App() {
   const [hiddenMsgKey, setHiddenMsgKey] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
   const { limitReached, increment } = useDemoLimit();
+  const [showLimitModal, setShowLimitModal] = useState(false);
   const lastAssistantCountRef = useRef(0);
   const hasInitializedRef = useRef(false);
   const messageSentMsRef = useRef(0);
@@ -110,7 +111,10 @@ export function App() {
   const handleSend = useCallback(
     async (text: string) => {
       if (!session?.threadId || !text.trim()) return;
-      if (limitReached) return;
+      if (limitReached) {
+        setShowLimitModal(true);
+        return;
+      }
       increment();
       userInteractedRef.current = true;
       stopSpeaking();
@@ -344,7 +348,10 @@ export function App() {
   }, [session?.resetRequested, handleReset]);
 
   const handleMicToggle = useCallback(() => {
-    if (limitReached) return;
+    if (limitReached) {
+      setShowLimitModal(true);
+      return;
+    }
     userInteractedRef.current = true;
     if (status === "idle") {
       setStatus("listening");
@@ -377,7 +384,7 @@ export function App() {
         />
       )}
 
-      {limitReached && <DemoLimitModal />}
+      {showLimitModal && <DemoLimitModal />}
 
       {/* Status Panel */}
       <aside
@@ -414,7 +421,7 @@ export function App() {
                     <VoiceButton
                       status={status}
                       onClick={handleMicToggle}
-                      disabled={!isReady || limitReached}
+                      disabled={!isReady}
                     />
                   )}
                   <TextInput
@@ -422,8 +429,7 @@ export function App() {
                     disabled={
                       !isReady ||
                       status === "processing" ||
-                      status === "speaking" ||
-                      limitReached
+                      status === "speaking"
                     }
                   />
                 </div>
