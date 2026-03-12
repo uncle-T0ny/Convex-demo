@@ -10,9 +10,14 @@ import {
 } from "@convex-dev/agent";
 import { createVoiceAgent } from "./agent";
 
+const MAX_PROMPT_LENGTH = 4000;
+
 export const sendMessage = mutation({
   args: { threadId: v.string(), prompt: v.string() },
   handler: async (ctx, { threadId, prompt }) => {
+    if (prompt.length > MAX_PROMPT_LENGTH) {
+      throw new Error(`Prompt too long (max ${MAX_PROMPT_LENGTH} characters)`);
+    }
     const { messageId } = await saveMessage(ctx, components.agent, {
       threadId,
       prompt,

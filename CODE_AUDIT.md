@@ -43,14 +43,14 @@
 | 7.1 | Fixed | `convex/chat.ts` | Deprecated `synthesizeSpeech` still client-callable, exposes API key | Principle of least privilege; use `internalAction` | 8b2fdc3 |
 | 7.2 | Open | `convex/agent.ts` | No input length limits on agent tool Zod schemas | Input validation; OWASP — injection prevention | — |
 | 7.3 | Open | `convex/data.ts` | No date string format validation in backend mutations | Input validation at system boundaries | — |
-| 7.4 | Open | `convex/sessions.ts`, `convex/chat.ts`, `convex/dashboard.ts` | No authentication — all public mutations/queries callable by any client | OWASP A01 — Broken Access Control | — |
-| 7.5 | Open | `convex/chat.ts:14` | No prompt length limit on `sendMessage` mutation — `v.string()` accepts arbitrary size | OWASP A04 — Insecure Design; input validation | — |
+| 7.4 | Skipped | `convex/sessions.ts`, `convex/chat.ts`, `convex/dashboard.ts` | No authentication — all public mutations/queries callable by any client | OWASP A01 — Broken Access Control | — (demo app, auth requires infrastructure) |
+| 7.5 | Fixed | `convex/chat.ts:14` | No prompt length limit on `sendMessage` mutation — `v.string()` accepts arbitrary size | OWASP A04 — Insecure Design; input validation | 2f7083c |
 | 7.6 | Open | `convex/data.ts:209-218` | Unbounded array growth in `addPrepQuestion` — no limit on `prepQuestions` array size | Resource exhaustion prevention | — |
 | 7.7 | Open | `convex/agent.ts:215` | Unbounded `limit` param in `getSymptomHistoryTool` — `.collect()` loads all then slices | OWASP A04 — resource exhaustion; bound query params | — |
 | 7.8 | Open | `index.html` | Missing Content-Security-Policy and security headers — no CSP, X-Frame-Options, X-Content-Type-Options | OWASP A05 — Security Misconfiguration | — |
 | 7.9 | Open | `convex/chat.ts:102-103` | Cartesia API error body forwarded to client — information disclosure | OWASP A09 — Security Logging & Monitoring Failures | — |
 | 7.10 | Open | `convex/agent.ts:92` | Unvalidated `scheduledTime` format — `z.string()` accepts any value, not `HH:MM` | Input validation at system boundaries | — |
-| 7.11 | Open | `convex/chat.ts`, `convex/sessions.ts` | No rate limiting on `sendMessage` or `createSession` — LLM API abuse vector | OWASP A04 — Insecure Design; rate limiting | — |
+| 7.11 | Skipped | `convex/chat.ts`, `convex/sessions.ts` | No rate limiting on `sendMessage` or `createSession` — LLM API abuse vector | OWASP A04 — Insecure Design; rate limiting | — (demo app, requires rate-limit infrastructure) |
 | 7.12 | Open | `src/hooks/useTextToSpeech.ts` | 11 verbose `console.error`/`console.warn` calls in production — leaks stack traces | OWASP A09 — information disclosure via error logging | — |
 | **8. Test Quality** | | | | | |
 | 8.1 | Open | `src/__tests__/components/*.test.tsx` | `.toBeDefined()` misuse widespread across all component tests | Meaningful assertions | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 157 Open, 0 In-progress, 2 Fixed
+**Totals:** 159 issues — 154 Open, 0 In-progress, 3 Fixed, 2 Skipped
 
 ---
 
