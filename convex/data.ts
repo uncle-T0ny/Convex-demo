@@ -221,6 +221,9 @@ export const addPrepQuestion = internalMutation({
     const appointment = await ctx.db.get(appointmentId);
     if (!appointment) return;
     const existing = appointment.prepQuestions ?? [];
+    if (existing.length >= 50) {
+      throw new Error("Maximum prep questions reached (50)");
+    }
     await ctx.db.patch(appointmentId, {
       prepQuestions: [...existing, question],
     });
