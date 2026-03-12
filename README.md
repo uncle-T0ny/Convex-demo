@@ -85,3 +85,66 @@ npx wrangler pages deploy dist --project-name convex-voice-demo
 ```
 
 CI/CD: push to `main` → GitHub Actions → typecheck → lint → test → deploy (Convex + Cloudflare Pages). PRs run checks only.
+
+## Automated Audit Fix Loop (Ralph Loop)
+
+An autonomous Claude Code loop that works through `CODE_AUDIT.md` issues one at a time — pick, fix, verify, commit, repeat.
+
+### Prerequisites
+
+```bash
+brew install yq                    # YAML parser (required by runner script)
+```
+
+The [ralph-loop](https://github.com/anthropics/claude-plugins-official/tree/main/ralph-loop) Claude Code plugin must be installed. It provides the `/ralph-loop:ralph-loop` skill that powers the iteration loop.
+
+### Running
+
+```bash
+./scripts/ralph/ralph_run.sh
+```
+
+You'll see a menu of available prompts:
+
+| Prompt | What it does | Max iterations |
+|--------|-------------|----------------|
+| `audit-fix` | Fix ALL issues in priority order (Critical/Security first) | 200 |
+| `audit-fix-security` | Fix only security issues (7.1–7.12) | 20 |
+| `audit-fix-simplify` | Apply code simplifications (S1–S100) | 120 |
+
+Select a prompt by number or name, confirm, and the loop starts. Each iteration:
+
+1. Reads `CODE_AUDIT.md`, picks the next Open issue
+2. Implements the fix
+3. Runs `typecheck + lint + test` to verify
+4. Updates the tracker table (Status → Fixed, adds commit hash)
+5. Commits with `fix(<area>): <description> [audit #<id>]`
+
+The loop exits when all issues are Fixed/Skipped (verified by `grep -c "| Open |" CODE_AUDIT.md` returning 0).
+
+### Monitoring
+
+```bash
+# Current iteration:
+grep '^iteration:' .claude/ralph-loop.local.md
+
+# Full loop state:
+head -10 .claude/ralph-loop.local.md
+
+# Cancel the loop (from another terminal):
+rm .claude/ralph-loop.local.md
+```
+
+### Adding Custom Prompts
+
+Edit `scripts/ralph/prompts.yml`. Each prompt has three fields:
+
+```yaml
+my-prompt:
+  task: |
+    Step-by-step instructions for what Claude should do each iteration.
+  exit_condition: |
+    When to stop. Must be verifiable — Claude outputs <promise>text</promise>
+    only when the condition is genuinely true.
+  max_iterations: 50
+```

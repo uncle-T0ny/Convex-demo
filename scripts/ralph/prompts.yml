@@ -1,0 +1,118 @@
+audit-fix:
+  task: |
+    ## Code Audit Fix Loop
+
+    You are fixing issues from CODE_AUDIT.md one at a time. Each iteration: pick one issue, fix it, verify, commit, update the tracker.
+
+    ### Step 1: Pick the Next Issue
+    - Read CODE_AUDIT.md and find the issue tracker table
+    - Find the first issue with Status "Open"
+    - Follow the priority order at the bottom of the file (Critical/Now items first)
+    - Read the detailed description for that issue in the corresponding section below the table
+    - If the issue references specific files and line numbers, read those files
+
+    ### Step 2: Implement the Fix
+    - Make the minimal code changes needed to resolve the issue
+    - Follow existing code patterns and style (see CLAUDE.md)
+    - Do NOT refactor unrelated code or add features beyond the fix
+    - Do NOT add comments like "// Fixed issue 7.4" — the commit message handles attribution
+
+    ### Step 3: Verify the Fix
+    - Run `npm run typecheck` to ensure no type errors
+    - Run `npm run lint` to ensure no lint warnings
+    - Run `npm run test:run` to ensure no test regressions
+    - If you changed test files, make sure the new/modified tests pass
+    - If verification fails, fix the issue before proceeding
+
+    ### Step 4: Update CODE_AUDIT.md
+    - In the issue tracker table, change the issue's Status from "Open" to "Fixed"
+    - Leave the Fix Commit column as "—" for now (will be filled after commit)
+
+    ### Step 5: Commit the Changes
+    - Stage only the files changed for this specific fix plus CODE_AUDIT.md
+    - Use commit message format: `fix(<area>): <brief description> [audit #<issue_id>]`
+    - Examples:
+      - `fix(security): add auth checks to public endpoints [audit #7.4]`
+      - `fix(convex): add prompt length limit to sendMessage [audit #7.5]`
+      - `refactor(agent): extract sessionTool wrapper [audit #S22]`
+
+    ### Step 6: Record the Commit Hash
+    - Get the commit hash with `git rev-parse --short HEAD`
+    - Update CODE_AUDIT.md: set the Fix Commit column to the short hash
+    - Update the Totals line (decrement Open count, increment Fixed count)
+    - Amend the previous commit to include this tracker update:
+      `git add CODE_AUDIT.md && git commit --amend --no-edit`
+
+    ### Important Rules
+    - Fix ONE issue per iteration — do not batch multiple fixes
+    - If an issue is unclear or seems wrong, mark it "Skipped" with a note and move on
+    - If a fix would break other things, skip it and leave a note
+    - Always run verification (Step 3) before committing
+    - Keep commits small and focused
+
+  exit_condition: |
+    All issues in the CODE_AUDIT.md issue tracker table have status "Fixed" or "Skipped".
+    There are zero issues with status "Open" remaining in the table.
+    Verify by checking: grep -c "| Open |" CODE_AUDIT.md returns 0.
+
+  max_iterations: 200
+
+audit-fix-security:
+  task: |
+    ## Security Audit Fix Loop
+
+    You are fixing ONLY security issues (section 7.*) from CODE_AUDIT.md.
+
+    ### Step 1: Pick the Next Security Issue
+    - Read CODE_AUDIT.md and find issues numbered 7.* with Status "Open"
+    - Start with the highest severity (Critical first, then High, Medium, Low)
+    - Read the detailed description in section 7
+
+    ### Step 2: Implement the Fix
+    - Make the minimal secure code changes needed
+    - Follow OWASP guidelines and security best practices
+    - Do NOT break existing functionality
+
+    ### Step 3: Verify
+    - Run `npm run typecheck && npm run lint && npm run test:run`
+    - If tests fail, fix them
+
+    ### Step 4: Update Tracker and Commit
+    - Update CODE_AUDIT.md: Status "Open" -> "Fixed", add commit hash
+    - Update the Totals line
+    - Commit: `fix(security): <description> [audit #7.X]`
+
+  exit_condition: |
+    All security issues (7.1 through 7.12) in CODE_AUDIT.md have status "Fixed" or "Skipped".
+    Verify: grep "| 7\." CODE_AUDIT.md | grep -c "| Open |" returns 0.
+
+  max_iterations: 20
+
+audit-fix-simplify:
+  task: |
+    ## Simplification Fix Loop
+
+    You are applying code simplifications (S1-S100) from CODE_AUDIT.md.
+
+    ### Step 1: Pick the Next Simplification
+    - Read CODE_AUDIT.md and find the first S* issue with Status "Open"
+    - Read the referenced file(s) and understand the current code
+
+    ### Step 2: Apply the Simplification
+    - Make the change described in the issue
+    - Keep changes minimal and focused on the described simplification
+    - Do NOT chain additional refactors
+
+    ### Step 3: Verify
+    - Run `npm run typecheck && npm run lint && npm run test:run`
+
+    ### Step 4: Update Tracker and Commit
+    - Update CODE_AUDIT.md: Status "Open" -> "Fixed", add commit hash
+    - Update the Totals line
+    - Commit: `refactor(<area>): <description> [audit #S<N>]`
+
+  exit_condition: |
+    All simplification issues (S1 through S100) in CODE_AUDIT.md have status "Fixed" or "Skipped".
+    Verify: grep "| S[0-9]" CODE_AUDIT.md | grep -c "| Open |" returns 0.
+
+  max_iterations: 120
