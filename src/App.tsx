@@ -10,6 +10,8 @@ import { TextInput } from "./components/TextInput";
 import { StatusPanel } from "./components/StatusPanel";
 import { useSpeechRecognition } from "./hooks/useSpeechRecognition";
 import { useTextToSpeech } from "./hooks/useTextToSpeech";
+import { useDemoLimit } from "./hooks/useDemoLimit";
+import { DemoLimitModal } from "./components/DemoLimitModal";
 import { extractCompleteSentences } from "./lib/extractCompleteSentences";
 import type { AudioPipelineMetrics, PipelineTimings } from "./lib/audioTelemetry";
 
@@ -23,6 +25,7 @@ export function App() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [hiddenMsgKey, setHiddenMsgKey] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
+  const { limitReached, increment } = useDemoLimit();
   const lastAssistantCountRef = useRef(0);
   const hasInitializedRef = useRef(false);
   const messageSentMsRef = useRef(0);
@@ -107,6 +110,8 @@ export function App() {
   const handleSend = useCallback(
     async (text: string) => {
       if (!session?.threadId || !text.trim()) return;
+      if (limitReached) return;
+      increment();
       userInteractedRef.current = true;
       stopSpeaking();
       setHiddenMsgKey(null);
@@ -118,7 +123,7 @@ export function App() {
       setStatus("processing");
       await sendMessage({ threadId: session.threadId, prompt: text.trim() });
     },
-    [session?.threadId, sendMessage, stopSpeaking],
+    [session?.threadId, sendMessage, stopSpeaking, limitReached, increment],
   );
 
   const {
@@ -339,6 +344,7 @@ export function App() {
   }, [session?.resetRequested, handleReset]);
 
   const handleMicToggle = useCallback(() => {
+    if (limitReached) return;
     userInteractedRef.current = true;
     if (status === "idle") {
       setStatus("listening");
@@ -357,7 +363,7 @@ export function App() {
       setHiddenMsgKey(null);
       setStatus("idle");
     }
-  }, [status, startListening, stopListening, stopSpeaking]);
+  }, [status, startListening, stopListening, stopSpeaking, limitReached]);
 
   const isReady = !!session?.threadId;
 
@@ -370,6 +376,8 @@ export function App() {
           onClick={() => setPanelOpen(false)}
         />
       )}
+
+      {limitReached && <DemoLimitModal />}
 
       {/* Status Panel */}
       <aside
@@ -400,13 +408,13 @@ export function App() {
               onStart={handleStart}
             />
             {started && (
-              <div className="border-t border-gray-200 bg-white p-4">
+              <div className="rounded-t-2xl bg-white p-4">
                 <div className="flex items-center gap-3">
                   {speechSupported && (
                     <VoiceButton
                       status={status}
                       onClick={handleMicToggle}
-                      disabled={!isReady}
+                      disabled={!isReady || limitReached}
                     />
                   )}
                   <TextInput
@@ -414,7 +422,8 @@ export function App() {
                     disabled={
                       !isReady ||
                       status === "processing" ||
-                      status === "speaking"
+                      status === "speaking" ||
+                      limitReached
                     }
                   />
                 </div>

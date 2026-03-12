@@ -11,26 +11,31 @@ export function VoiceButton({ status, onClick, disabled }: VoiceButtonProps) {
   const isSpeaking = status === "speaking";
 
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled || status === "processing"}
-      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-all ${
-        isActive
-          ? "bg-coral text-white shadow-lg shadow-coral/30"
-          : isSpeaking
-            ? "bg-teal text-white"
-            : "bg-gray-100 text-purple hover:bg-gray-200"
-      } disabled:cursor-not-allowed disabled:opacity-50`}
-      aria-label={
-        isActive
-          ? "Stop listening"
-          : isSpeaking
-            ? "Stop speaking"
-            : "Start listening"
-      }
-    >
-      {isSpeaking ? <SpeakerIcon /> : <MicIcon />}
-    </button>
+    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center">
+      {isActive && (
+        <span className="absolute inset-0 animate-ping rounded-full bg-coral/40" />
+      )}
+      <button
+        onClick={onClick}
+        disabled={disabled || status === "processing"}
+        className={`relative flex h-12 w-12 items-center justify-center rounded-full transition-all ${
+          isActive
+            ? "animate-pulse bg-coral text-white shadow-lg shadow-coral/30"
+            : isSpeaking
+              ? "bg-teal text-white"
+              : "bg-gray-100 text-purple hover:bg-gray-200"
+        } disabled:cursor-not-allowed disabled:opacity-50`}
+        aria-label={
+          isActive
+            ? "Stop listening"
+            : isSpeaking
+              ? "Stop speaking"
+              : "Start listening"
+        }
+      >
+        {isSpeaking ? <SpeakerIcon /> : <MicIcon />}
+      </button>
+    </div>
   );
 }
 
