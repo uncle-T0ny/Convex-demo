@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.0",
+    "@ai-sdk/cerebras": "^1.0.39",
+    "@cartesia/cartesia-js": "^3.0.0",
     "@convex-dev/agent": "^0.3.0",
     "ai": "^5.0.29",
     "convex": "^1.32.0",
