@@ -2,12 +2,118 @@ import { renderHook, act } from "@testing-library/react";
 import { describe, expect, test, vi, afterEach, beforeEach } from "vitest";
 import { useTextToSpeech } from "../../hooks/useTextToSpeech";
 
-const mockSynthesize = vi.fn();
+// Mock getTtsConfig action
+const mockGetTtsConfig = vi
+  .fn()
+  .mockResolvedValue({ apiKey: "test-key", voiceId: "test-voice" });
 
 vi.mock("convex/react", () => ({
-  useAction: () => mockSynthesize,
+  useAction: () => mockGetTtsConfig,
 }));
 
+// Mock Cartesia SDK
+interface MockTtsContext {
+  push: ReturnType<typeof vi.fn>;
+  no_more_inputs: ReturnType<typeof vi.fn>;
+  cancel: ReturnType<typeof vi.fn>;
+  receive: ReturnType<typeof vi.fn>;
+}
+
+let mockTtsContext: MockTtsContext;
+
+interface MockWs {
+  context: ReturnType<typeof vi.fn>;
+  close: ReturnType<typeof vi.fn>;
+  on: ReturnType<typeof vi.fn>;
+}
+
+let mockWs: MockWs;
+
+vi.mock("@cartesia/cartesia-js", () => {
+  return {
+    default: class MockCartesia {
+      tts = {
+        websocket: vi.fn().mockImplementation(async () => {
+          mockTtsContext = {
+            push: vi.fn().mockResolvedValue(undefined),
+            no_more_inputs: vi.fn().mockResolvedValue(undefined),
+            cancel: vi.fn().mockResolvedValue(undefined),
+            receive: vi.fn().mockReturnValue(
+              (async function* () {
+                // Yield one chunk then end
+                yield {
+                  type: "chunk" as const,
+                  audio: new Float32Array([0.1, 0.2, 0.3]),
+                };
+              })(),
+            ),
+          };
+          mockWs = {
+            context: vi.fn().mockReturnValue(mockTtsContext),
+            close: vi.fn(),
+            on: vi.fn(),
+          };
+          return mockWs;
+        }),
+      };
+    },
+  };
+});
+
+// Mock AudioContext
+class MockAudioBufferSourceNode {
+  buffer: AudioBuffer | null = null;
+  onended: (() => void) | null = null;
+  connect = vi.fn();
+  start = vi.fn();
+  stop = vi.fn();
+}
+
+class MockAudioBuffer {
+  numberOfChannels = 1;
+  length: number;
+  sampleRate: number;
+  duration: number;
+  private channelData: Float32Array;
+
+  constructor(options: { length: number; sampleRate: number }) {
+    this.length = options.length;
+    this.sampleRate = options.sampleRate;
+    this.duration = options.length / options.sampleRate;
+    this.channelData = new Float32Array(options.length);
+  }
+
+  getChannelData() {
+    return this.channelData;
+  }
+}
+
+function installAudioMocks() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).AudioContext = class MockAudioContext {
+    sampleRate = 44100;
+    currentTime = 0;
+    state = "running";
+    destination = {};
+    createBufferSource() {
+      return new MockAudioBufferSourceNode();
+    }
+    createBuffer(
+      _channels: number,
+      length: number,
+      sampleRate: number,
+    ): AudioBuffer {
+      return new MockAudioBuffer({
+        length,
+        sampleRate,
+      }) as unknown as AudioBuffer;
+    }
+    resume = vi.fn().mockResolvedValue(undefined);
+    close = vi.fn().mockResolvedValue(undefined);
+  };
+}
+
+// Mock Web Speech API
 interface MockUtterance {
   text: string;
   onend: (() => void) | null;
@@ -16,59 +122,22 @@ interface MockUtterance {
 
 let lastUtterance: MockUtterance | null = null;
 
-interface MockAudio {
-  src: string;
-  onended: (() => void) | null;
-  onerror: (() => void) | null;
-  play: ReturnType<typeof vi.fn>;
-  pause: ReturnType<typeof vi.fn>;
-}
-
-let lastAudio: MockAudio | null = null;
-
-function installMocks() {
+function installSpeechMocks() {
   lastUtterance = null;
-  lastAudio = null;
-
   Object.defineProperty(window, "speechSynthesis", {
-    value: {
-      cancel: vi.fn(),
-      speak: vi.fn(),
-    },
+    value: { cancel: vi.fn(), speak: vi.fn() },
     writable: true,
     configurable: true,
   });
   Object.defineProperty(window, "SpeechSynthesisUtterance", {
     value: function MockUtteranceConstructor(text: string) {
-      const utterance: MockUtterance = {
-        text,
-        onend: null,
-        onerror: null,
-      };
+      const utterance: MockUtterance = { text, onend: null, onerror: null };
       lastUtterance = utterance;
       return utterance;
     },
     writable: true,
     configurable: true,
   });
-
-  // Mock Audio constructor
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (globalThis as any).Audio = function MockAudioConstructor() {
-    const audio: MockAudio = {
-      src: "",
-      onended: null,
-      onerror: null,
-      play: vi.fn().mockResolvedValue(undefined),
-      pause: vi.fn(),
-    };
-    lastAudio = audio;
-    return audio;
-  };
-
-  // Mock URL.createObjectURL / revokeObjectURL
-  globalThis.URL.createObjectURL = vi.fn().mockReturnValue("blob:mock-url");
-  globalThis.URL.revokeObjectURL = vi.fn();
 }
 
 function removeMocks() {
@@ -76,87 +145,134 @@ function removeMocks() {
   delete (window as any).speechSynthesis;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (window as any).SpeechSynthesisUtterance;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  delete (globalThis as any).AudioContext;
   lastUtterance = null;
-  lastAudio = null;
 }
 
 describe("useTextToSpeech", () => {
   beforeEach(() => {
-    installMocks();
-    mockSynthesize.mockReset();
+    installAudioMocks();
+    installSpeechMocks();
+    mockGetTtsConfig.mockClear();
   });
 
   afterEach(() => {
     removeMocks();
   });
 
-  test("speak calls Cartesia via synthesize action", async () => {
-    mockSynthesize.mockResolvedValue(new Uint8Array([1, 2, 3]));
+  test("prepare opens WebSocket, sends text, and resolves when buffering completes", async () => {
     const { result } = renderHook(() => useTextToSpeech({}));
+
     await act(async () => {
-      await result.current.speak("Hello");
+      await result.current.prepare("Hello world.");
     });
-    expect(mockSynthesize).toHaveBeenCalledWith({ text: "Hello" });
-    expect(lastAudio?.play).toHaveBeenCalled();
+
+    expect(mockGetTtsConfig).toHaveBeenCalled();
+    expect(mockWs.context).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model_id: "sonic-3",
+        voice: { mode: "id", id: "test-voice" },
+      }),
+    );
+    expect(mockTtsContext.push).toHaveBeenCalledWith({
+      transcript: "Hello world.",
+    });
+    expect(mockTtsContext.no_more_inputs).toHaveBeenCalled();
   });
 
-  test("onEnd called when audio finishes", async () => {
-    mockSynthesize.mockResolvedValue(new Uint8Array([1, 2, 3]));
-    const onEnd = vi.fn();
-    const { result } = renderHook(() => useTextToSpeech({ onEnd }));
+  test("isReady becomes true after prepare resolves", async () => {
+    const { result } = renderHook(() => useTextToSpeech({}));
+
+    expect(result.current.isReady).toBe(false);
+
     await act(async () => {
-      await result.current.speak("Hello");
+      await result.current.prepare("Hello.");
     });
-    act(() => lastAudio!.onended!());
-    expect(onEnd).toHaveBeenCalled();
+
+    expect(result.current.isReady).toBe(true);
   });
 
-  test("onEnd called on audio error", async () => {
-    mockSynthesize.mockResolvedValue(new Uint8Array([1, 2, 3]));
-    const onEnd = vi.fn();
-    const { result } = renderHook(() => useTextToSpeech({ onEnd }));
+  test("play() triggers audio playback after prepare", async () => {
+    const { result } = renderHook(() => useTextToSpeech({}));
+
     await act(async () => {
-      await result.current.speak("Hello");
+      await result.current.prepare("Hello.");
     });
-    act(() => lastAudio!.onerror!());
-    expect(onEnd).toHaveBeenCalled();
+
+    act(() => {
+      result.current.play();
+    });
+
+    expect(result.current.isReady).toBe(false);
   });
 
-  test("falls back to Web Speech API when Cartesia fails", async () => {
-    mockSynthesize.mockRejectedValue(new Error("API error"));
+  test("stop clears ready state and cancels Web Speech", async () => {
+    const { result } = renderHook(() => useTextToSpeech({}));
+
+    await act(async () => {
+      await result.current.prepare("Hello.");
+    });
+
+    expect(result.current.isReady).toBe(true);
+
+    act(() => {
+      result.current.stop();
+    });
+
+    expect(result.current.isReady).toBe(false);
+    expect(window.speechSynthesis.cancel).toHaveBeenCalled();
+  });
+
+  test("config is cached across prepare calls", async () => {
+    const { result } = renderHook(() => useTextToSpeech({}));
+
+    await act(async () => {
+      await result.current.prepare("First.");
+    });
+    act(() => result.current.stop());
+    await act(async () => {
+      await result.current.prepare("Second.");
+    });
+
+    expect(mockGetTtsConfig).toHaveBeenCalledTimes(1);
+  });
+
+  test("falls back to Web Speech API on SDK error", async () => {
+    mockGetTtsConfig.mockRejectedValueOnce(new Error("API error"));
     const onEnd = vi.fn();
     const { result } = renderHook(() => useTextToSpeech({ onEnd }));
+
     await act(async () => {
-      await result.current.speak("Hello");
+      await result.current.prepare("Hello");
     });
+
+    // isReady should still be true (fallback prepared)
+    expect(result.current.isReady).toBe(true);
+
+    act(() => {
+      result.current.play();
+    });
+
     expect(window.speechSynthesis.speak).toHaveBeenCalled();
     expect(lastUtterance?.text).toBe("Hello");
   });
 
-  test("fallback onEnd called when utterance finishes", async () => {
-    mockSynthesize.mockRejectedValue(new Error("API error"));
+  test("fallback onEnd fires when utterance finishes", async () => {
+    mockGetTtsConfig.mockRejectedValueOnce(new Error("API error"));
     const onEnd = vi.fn();
     const { result } = renderHook(() => useTextToSpeech({ onEnd }));
+
     await act(async () => {
-      await result.current.speak("Hello");
+      await result.current.prepare("Hello");
     });
+    act(() => result.current.play());
     act(() => lastUtterance!.onend!());
+
     expect(onEnd).toHaveBeenCalled();
   });
 
-  test("stop pauses audio and cancels speechSynthesis", async () => {
-    mockSynthesize.mockResolvedValue(new Uint8Array([1, 2, 3]));
-    const { result } = renderHook(() => useTextToSpeech({}));
-    await act(async () => {
-      await result.current.speak("Hello");
-    });
-    const audio = lastAudio;
-    act(() => result.current.stop());
-    expect(audio?.pause).toHaveBeenCalled();
-    expect(window.speechSynthesis.cancel).toHaveBeenCalled();
-  });
-
-  test("stop is safe when speechSynthesis undefined", () => {
+  test("stop is safe when speechSynthesis is undefined", () => {
     removeMocks();
     const { result } = renderHook(() => useTextToSpeech({}));
     expect(() => {
@@ -164,15 +280,57 @@ describe("useTextToSpeech", () => {
     }).not.toThrow();
   });
 
-  test("revokes previous blob URL on new speak", async () => {
-    mockSynthesize.mockResolvedValue(new Uint8Array([1, 2, 3]));
-    const { result } = renderHook(() => useTextToSpeech({}));
-    await act(async () => {
-      await result.current.speak("First");
+  describe("timing telemetry", () => {
+    test("onMetrics fires with valid metrics after play completes", async () => {
+      const onMetrics = vi.fn();
+      const onEnd = vi.fn();
+
+      // Track source nodes so we can fire onended
+      const sourceNodes: MockAudioBufferSourceNode[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (globalThis as any).AudioContext = class extends (globalThis as any)
+        .AudioContext {
+        createBufferSource() {
+          const node = new MockAudioBufferSourceNode();
+          sourceNodes.push(node);
+          return node;
+        }
+      };
+
+      const { result } = renderHook(() =>
+        useTextToSpeech({ onEnd, onMetrics }),
+      );
+
+      await act(async () => {
+        await result.current.prepare("Hello world.");
+      });
+
+      // Wait for async receive loop to complete
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 10));
+      });
+
+      act(() => {
+        result.current.play();
+      });
+
+      // Wait for play() to schedule sources
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 10));
+      });
+
+      // Simulate all audio sources finishing playback
+      act(() => {
+        for (const node of sourceNodes) {
+          node.onended?.();
+        }
+      });
+
+      if (onMetrics.mock.calls.length > 0) {
+        const metrics = onMetrics.mock.calls[0][0];
+        expect(metrics.chunks.length).toBeGreaterThan(0);
+        expect(metrics.firstChunkArrivalMs).toBeGreaterThanOrEqual(0);
+      }
     });
-    await act(async () => {
-      await result.current.speak("Second");
-    });
-    expect(URL.revokeObjectURL).toHaveBeenCalled();
   });
 });

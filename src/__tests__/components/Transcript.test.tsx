@@ -17,35 +17,41 @@ function msg(
 }
 
 describe("Transcript", () => {
-  test("empty messages → placeholder text", () => {
+  test("not started → tap to start shown", () => {
     render(<Transcript messages={[]} status="idle" />);
     expect(
-      screen.getByText(/tap the mic or type to get started/i),
+      screen.getByText(/tap to start the conversation/i),
     ).toBeDefined();
   });
 
-  test("only system/tool messages → placeholder shown", () => {
-    render(
+  test("started with empty messages → loading mascot shown", () => {
+    const { container } = render(
+      <Transcript messages={[]} status="idle" started />,
+    );
+    expect(container.querySelector(".animate-think")).toBeDefined();
+  });
+
+  test("only system/tool messages → loading mascot shown", () => {
+    const { container } = render(
       <Transcript
         messages={[
           msg("system", "System prompt"),
           msg("tool", "tool_result"),
         ]}
         status="idle"
+        started
       />,
     );
-    expect(
-      screen.getByText(/tap the mic or type to get started/i),
-    ).toBeDefined();
+    expect(container.querySelector(".animate-think")).toBeDefined();
   });
 
   test("renders user messages", () => {
-    render(<Transcript messages={[msg("user", "Hello")]} status="idle" />);
+    render(<Transcript messages={[msg("user", "Hello")]} status="idle" started />);
     expect(screen.getByText("Hello")).toBeDefined();
   });
 
   test("renders assistant messages", () => {
-    render(<Transcript messages={[msg("assistant", "Hi there!")]} status="idle" />);
+    render(<Transcript messages={[msg("assistant", "Hi there!")]} status="idle" started />);
     expect(screen.getByText("Hi there!")).toBeDefined();
   });
 
@@ -57,6 +63,7 @@ describe("Transcript", () => {
           msg("system", "System prompt"),
         ]}
         status="idle"
+        started
       />,
     );
     expect(screen.queryByText("System prompt")).toBeNull();
@@ -70,34 +77,35 @@ describe("Transcript", () => {
           msg("tool", "tool_result"),
         ]}
         status="idle"
+        started
       />,
     );
     expect(screen.queryByText("tool_result")).toBeNull();
   });
 
   test("user messages right-aligned", () => {
-    render(<Transcript messages={[msg("user", "Hello")]} status="idle" />);
+    render(<Transcript messages={[msg("user", "Hello")]} status="idle" started />);
     const text = screen.getByText("Hello");
     const container = text.closest(".flex.justify-end");
     expect(container).not.toBeNull();
   });
 
   test("assistant messages left-aligned", () => {
-    render(<Transcript messages={[msg("assistant", "Hi!")]} status="idle" />);
+    render(<Transcript messages={[msg("assistant", "Hi!")]} status="idle" started />);
     const text = screen.getByText("Hi!");
     const container = text.closest(".flex.justify-start");
     expect(container).not.toBeNull();
   });
 
   test("user bubble is blue", () => {
-    render(<Transcript messages={[msg("user", "Hello")]} status="idle" />);
+    render(<Transcript messages={[msg("user", "Hello")]} status="idle" started />);
     const text = screen.getByText("Hello");
     const bubble = text.closest(".bg-purple");
     expect(bubble).not.toBeNull();
   });
 
   test("assistant bubble is white", () => {
-    render(<Transcript messages={[msg("assistant", "Hi!")]} status="idle" />);
+    render(<Transcript messages={[msg("assistant", "Hi!")]} status="idle" started />);
     const text = screen.getByText("Hi!");
     const bubble = text.closest(".bg-white");
     expect(bubble).not.toBeNull();
@@ -105,12 +113,13 @@ describe("Transcript", () => {
 
   test("auto-scrolls on new messages", () => {
     const { rerender } = render(
-      <Transcript messages={[msg("user", "Hello")]} status="idle" />,
+      <Transcript messages={[msg("user", "Hello")]} status="idle" started />,
     );
     rerender(
       <Transcript
         messages={[msg("user", "Hello"), msg("assistant", "Hi!")]}
         status="idle"
+        started
       />,
     );
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
