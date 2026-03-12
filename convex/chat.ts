@@ -11,6 +11,7 @@ import {
 import { createVoiceAgent } from "./agent";
 
 const MAX_PROMPT_LENGTH = 4000;
+const DEFAULT_VOICE_ID = "156fb8d2-335b-4950-9cb3-a2d33befec77";
 
 export const sendMessage = mutation({
   args: { threadId: v.string(), prompt: v.string() },
@@ -72,15 +73,12 @@ export const generateGreeting = internalAction({
 });
 
 export const getTtsConfig = action({
-  args: {},
   handler: async () => {
     const apiKey = process.env.CARTESIA_API_KEY;
     if (!apiKey) throw new Error("CARTESIA_API_KEY not configured");
     return {
       apiKey,
-      voiceId:
-        process.env.CARTESIA_VOICE_ID ??
-        "156fb8d2-335b-4950-9cb3-a2d33befec77",
+      voiceId: process.env.CARTESIA_VOICE_ID ?? DEFAULT_VOICE_ID,
     };
   },
 });

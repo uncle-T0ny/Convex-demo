@@ -105,7 +105,7 @@
 | S20 | Open | `src/components/StatusPanel.tsx` | Extract task status icon into a lookup | Table-driven rendering | — |
 | S21 | Open | `convex/agent.ts` | Remove `AnyTool = any` type alias — silences TypeScript | Avoid `any`; let inference work | — |
 | S22 | Open | `convex/agent.ts` | Extract `sessionTool()` wrapper — 15 tools repeat boilerplate | DRY — higher-order helper | — |
-| S23 | Open | `convex/agent.ts` | Simplify `getLanguageModel` — switch overkill for 1 provider | Remove dead branches (with 1.3) | — |
+| S23 | Fixed | `convex/agent.ts` | Simplify `getLanguageModel` — switch overkill for 1 provider | Remove dead branches (with 1.3) | 16cf217 (resolved by 1.3) |
 | S24 | Open | `convex/agent.ts` | Inline explicit handler arg types — Zod infers them | Don't Repeat Yourself; trust inference | — |
 | S25 | Open | `convex/data.ts`, `convex/dashboard.ts` | Use `.first()` instead of `.collect()[0]` | Use purpose-built query API | — |
 | S26 | Open | `convex/data.ts` | Chain filter directly in `getActiveMedications` | Remove unnecessary intermediate variable | — |
@@ -154,14 +154,14 @@
 | S68 | Open | `src/lib/StreamingAudioPlayer.ts` | Remove `bufferingDone` field — derive from state | Single source of truth | — |
 | S69 | Open | `src/lib/StreamingAudioPlayer.ts` | Combine 4 array iterations in `getMetrics()` into single loop | Reduce array passes | — |
 | S70 | Open | `convex/agent.ts` | Remove `LanguageModel` import — infer return type | Trust type inference | — |
-| S71 | Open | `convex/agent.ts` | Remove `console.log` from `getLanguageModel` — noise in prod logs | No debug logging in production paths | — |
+| S71 | Fixed | `convex/agent.ts` | Remove `console.log` from `getLanguageModel` — noise in prod logs | No debug logging in production paths | 16cf217 (resolved by 1.3) |
 | S72 | Open | `convex/agent.ts` | Standardize tool variable naming (drop `Tool` suffix) | Consistent naming convention | — |
 | S73 | Open | `convex/agent.ts` | Remove/fix `as Id<"sessions">` cast in `resetConversationTool` | Type-safe return from `resolveSessionId` | — |
 | S74 | Open | `convex/agent.ts` | Early return in `getMedicationsTool` to reduce nesting | Early return pattern | — |
 | S75 | Open | `convex/agent.ts` | Simplify `logSymptomsTool` return — echoes input unnecessarily | Return only what the caller needs | — |
 | S76 | Open | `convex/agent.ts` | Flatten appointment lookup ternary in `generateAppointmentSummaryTool` | Simplify conditional expressions | — |
-| S77 | Open | `convex/chat.ts` | Extract default voice ID UUID to named constant | No magic strings/UUIDs | — |
-| S78 | Open | `convex/chat.ts` | Remove empty `args: {}` from `getTtsConfig` | Remove redundant defaults | — |
+| S77 | Fixed | `convex/chat.ts` | Extract default voice ID UUID to named constant | No magic strings/UUIDs | f94e4da |
+| S78 | Fixed | `convex/chat.ts` | Remove empty `args: {}` from `getTtsConfig` | Remove redundant defaults | f94e4da |
 | S79 | Open | `convex/dashboard.ts` | Inline `today` variable — used once | Remove trivial intermediate variables | — |
 | S80 | Open | `convex/data.ts` | Use `.take(limit)` instead of `.collect()` + `.slice()` | Limit at query level, not JS level | — |
 | S81 | Open | `convex/data.ts` | Data-drive today's standalone task inserts — array + loop | Data-driven iteration | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 135 Open, 0 In-progress, 22 Fixed, 2 Skipped
+**Totals:** 159 issues — 131 Open, 0 In-progress, 26 Fixed, 2 Skipped
 
 ---
 
