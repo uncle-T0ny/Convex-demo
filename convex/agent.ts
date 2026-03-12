@@ -2,7 +2,7 @@ import { Agent, createTool } from "@convex-dev/agent";
 import { z } from "zod/v4";
 import { components, internal } from "./_generated/api";
 import { anthropic } from "@ai-sdk/anthropic";
-import type { LanguageModel } from "ai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { ToolCtx } from "@convex-dev/agent";
 import type { DataModel, Id } from "./_generated/dataModel";
 
@@ -413,8 +413,20 @@ Important rules:
 Your responses will be spoken aloud with an expressive voice that conveys emotion.
 Write in a way that carries natural emotional tone — the voice engine will pick up on your warmth, sympathy, or excitement from context.`;
 
-function getLanguageModel(): LanguageModel {
+function getLanguageModel() {
+  const provider = process.env.LLM_PROVIDER ?? "anthropic";
   const model = process.env.LLM_MODEL;
+
+  if (provider === "cerebras") {
+    const cerebras = createOpenAICompatible({
+      name: "cerebras",
+      baseURL: "https://api.cerebras.ai/v1",
+      apiKey: process.env.CEREBRAS_API_KEY,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return cerebras.chatModel(model ?? "llama-3.3-70b") as any;
+  }
+
   return anthropic(model ?? "claude-haiku-4-5-20251001");
 }
 
