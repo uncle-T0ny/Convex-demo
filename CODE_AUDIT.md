@@ -19,7 +19,7 @@
 | 2.3 | Fixed | `src/components/Transcript.tsx` | Animated dots JSX duplicated (lines 108–112, 200–204) | DRY — extract component | 125abcd |
 | 2.4 | Fixed | `src/__tests__/hooks/useTextToSpeech.test.ts`, `src/__tests__/lib/StreamingAudioPlayer.test.ts` | Audio mock classes duplicated across test files | DRY — shared test utilities | 586789e |
 | **3. Misplaced Helpers** | | | | | |
-| 3.1 | Open | `src/components/Transcript.tsx` | `cleanDisplayText()` — pure text processing in component file | Separation of concerns; testability | — |
+| 3.1 | Fixed | `src/components/Transcript.tsx` | `cleanDisplayText()` — pure text processing in component file | Separation of concerns; testability | — |
 | 3.2 | Open | `src/components/VoiceButton.tsx` | `MicIcon()`/`SpeakerIcon()` inline SVG icons | Component organization | — |
 | 3.3 | Open | `convex/agent.ts`, `convex/data.ts` | Date/time helpers scattered across backend files | Consolidate into `convex/lib/dates.ts` | — |
 | 3.4 | Open | `src/components/Transcript.tsx` | Message filtering logic with magic string `"Hi!"` inline in JSX | Extract utility function; no magic strings | — |
