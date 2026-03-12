@@ -11,8 +11,8 @@
 |---|--------|---------|-------------|---------------------|------------|
 | **1. Unused Code** | | | | | |
 | 1.1 | Fixed | `convex/chat.ts` | Deprecated `synthesizeSpeech` action — dead code, client-callable | Dead code elimination; YAGNI | 8b2fdc3 |
-| 1.2 | Open | `package.json` | `convex-helpers` package never imported | Remove unused dependencies | — |
-| 1.3 | Open | `convex/agent.ts`, `package.json` | `@ai-sdk/cerebras` dead code path — import + switch case never reached | YAGNI; tree-shake unused providers | — |
+| 1.2 | Fixed | `package.json` | `convex-helpers` package never imported | Remove unused dependencies | 16cf217 (already removed) |
+| 1.3 | Fixed | `convex/agent.ts`, `package.json` | `@ai-sdk/cerebras` dead code path — import + switch case never reached | YAGNI; tree-shake unused providers | 16cf217 |
 | **2. Duplicated Code** | | | | | |
 | 2.1 | Open | `convex/agent.ts`, `convex/data.ts`, `convex/dashboard.ts` | Date formatting — 3 implementations of `toISOString().split("T")[0]` | DRY — extract shared utility | — |
 | 2.2 | Open | `convex/data.ts`, `convex/dashboard.ts` | Appointment filter+sort duplicated verbatim | DRY — reuse existing query | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 140 Open, 0 In-progress, 17 Fixed, 2 Skipped
+**Totals:** 159 issues — 138 Open, 0 In-progress, 19 Fixed, 2 Skipped
 
 ---
 

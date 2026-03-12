@@ -2,7 +2,6 @@ import { Agent, createTool } from "@convex-dev/agent";
 import { z } from "zod/v4";
 import { components, internal } from "./_generated/api";
 import { anthropic } from "@ai-sdk/anthropic";
-import { cerebras } from "@ai-sdk/cerebras";
 import type { LanguageModel } from "ai";
 import type { ToolCtx } from "@convex-dev/agent";
 import type { DataModel, Id } from "./_generated/dataModel";
@@ -415,16 +414,8 @@ Your responses will be spoken aloud with an expressive voice that conveys emotio
 Write in a way that carries natural emotional tone — the voice engine will pick up on your warmth, sympathy, or excitement from context.`;
 
 function getLanguageModel(): LanguageModel {
-  const provider = process.env.LLM_PROVIDER ?? "anthropic";
   const model = process.env.LLM_MODEL;
-  console.log(`[LLM] provider=${provider} model=${model ?? "(default)"}`);
-  switch (provider) {
-    case "cerebras":
-      return cerebras(model ?? "gpt-oss-120b");
-    case "anthropic":
-    default:
-      return anthropic(model ?? "claude-haiku-4-5-20251001");
-  }
+  return anthropic(model ?? "claude-haiku-4-5-20251001");
 }
 
 export function createVoiceAgent(additionalContext?: string) {
