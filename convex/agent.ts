@@ -42,7 +42,7 @@ const getTodaysTasks: AnyTool = createTool({
 const getTasksForDate: AnyTool = createTool({
   description: "Get treatment tasks for a specific date",
   args: z.object({
-    date: z.string().max(10).describe("ISO date string (YYYY-MM-DD)"),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe("ISO date string (YYYY-MM-DD)"),
   }),
   handler: async (ctx: Ctx, args: { date: string }) => {
     const sessionId = await resolveSessionId(ctx);
@@ -63,7 +63,7 @@ const completeTaskTool: AnyTool = createTool({
       .describe("Part of the task title to match, e.g. 'prenatal'"),
     date: z
       .string()
-      .max(10)
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
       .optional()
       .describe("Optional ISO date, defaults to today"),
   }),
@@ -90,8 +90,15 @@ const createTaskTool: AnyTool = createTool({
   args: z.object({
     title: z.string().max(200),
     description: z.string().max(1000).optional(),
-    scheduledDate: z.string().max(10).describe("ISO date string (YYYY-MM-DD)"),
-    scheduledTime: z.string().max(5).optional().describe("Time in HH:MM format"),
+    scheduledDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .describe("ISO date string (YYYY-MM-DD)"),
+    scheduledTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional()
+      .describe("Time in HH:MM format"),
     category: z
       .enum(["medication", "appointment", "logging", "other"])
       .default("other"),
@@ -125,7 +132,7 @@ const skipTaskTool: AnyTool = createTool({
     titleFragment: z.string().max(200).describe("Part of the task title to match"),
     date: z
       .string()
-      .max(10)
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
       .optional()
       .describe("Optional ISO date, defaults to today"),
   }),
