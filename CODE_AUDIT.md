@@ -47,7 +47,7 @@
 | 7.5 | Fixed | `convex/chat.ts:14` | No prompt length limit on `sendMessage` mutation — `v.string()` accepts arbitrary size | OWASP A04 — Insecure Design; input validation | 2f7083c |
 | 7.6 | Fixed | `convex/data.ts:209-218` | Unbounded array growth in `addPrepQuestion` — no limit on `prepQuestions` array size | Resource exhaustion prevention | cd76187 |
 | 7.7 | Fixed | `convex/agent.ts:215` | Unbounded `limit` param in `getSymptomHistoryTool` — `.collect()` loads all then slices | OWASP A04 — resource exhaustion; bound query params | 93da1ef |
-| 7.8 | Open | `index.html` | Missing Content-Security-Policy and security headers — no CSP, X-Frame-Options, X-Content-Type-Options | OWASP A05 — Security Misconfiguration | — |
+| 7.8 | Fixed | `index.html` | Missing Content-Security-Policy and security headers — no CSP, X-Frame-Options, X-Content-Type-Options | OWASP A05 — Security Misconfiguration | b077bca |
 | 7.9 | Open | `convex/chat.ts:102-103` | Cartesia API error body forwarded to client — information disclosure | OWASP A09 — Security Logging & Monitoring Failures | — |
 | 7.10 | Fixed | `convex/agent.ts:92` | Unvalidated `scheduledTime` format — `z.string()` accepts any value, not `HH:MM` | Input validation at system boundaries | 690f13d |
 | 7.11 | Skipped | `convex/chat.ts`, `convex/sessions.ts` | No rate limiting on `sendMessage` or `createSession` — LLM API abuse vector | OWASP A04 — Insecure Design; rate limiting | — (demo app, requires rate-limit infrastructure) |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 149 Open, 0 In-progress, 8 Fixed, 2 Skipped
+**Totals:** 159 issues — 148 Open, 0 In-progress, 9 Fixed, 2 Skipped
 
 ---
 
