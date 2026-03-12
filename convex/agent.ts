@@ -5,6 +5,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { ToolCtx } from "@convex-dev/agent";
 import type { DataModel, Id } from "./_generated/dataModel";
+import { toISODate } from "./lib/dates";
 
 type Ctx = ToolCtx<DataModel>;
 
@@ -19,10 +20,6 @@ async function resolveSessionId(ctx: Ctx): Promise<string> {
   return session._id;
 }
 
-function todayISO(): string {
-  return new Date().toISOString().split("T")[0];
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTool = any;
 
@@ -33,7 +30,7 @@ const getTodaysTasks: AnyTool = createTool({
     const sessionId = await resolveSessionId(ctx);
     return await ctx.runQuery(internal.data.getTasksForDate, {
       sessionId,
-      date: todayISO(),
+      date: toISODate(),
     });
   },
 });
@@ -71,7 +68,7 @@ const completeTaskTool: AnyTool = createTool({
     args: { titleFragment: string; date?: string },
   ) => {
     const sessionId = await resolveSessionId(ctx);
-    const date = args.date ?? todayISO();
+    const date = args.date ?? toISODate();
     const task = await ctx.runQuery(internal.data.getTaskByTitle, {
       sessionId,
       titleFragment: args.titleFragment,
@@ -140,7 +137,7 @@ const skipTaskTool: AnyTool = createTool({
     args: { titleFragment: string; date?: string },
   ) => {
     const sessionId = await resolveSessionId(ctx);
-    const date = args.date ?? todayISO();
+    const date = args.date ?? toISODate();
     const task = await ctx.runQuery(internal.data.getTaskByTitle, {
       sessionId,
       titleFragment: args.titleFragment,
@@ -201,7 +198,7 @@ const logSymptomsTool: AnyTool = createTool({
     const profile = await ctx.runQuery(internal.data.getProfile, {
       sessionId,
     });
-    const today = todayISO();
+    const today = toISODate();
     await ctx.runMutation(internal.data.logSymptoms, {
       sessionId,
       date: today,
@@ -347,7 +344,7 @@ const getPartnerUpdateTool: AnyTool = createTool({
     });
     const tasks = await ctx.runQuery(internal.data.getTasksForDate, {
       sessionId,
-      date: todayISO(),
+      date: toISODate(),
     });
     const meds = profile
       ? await ctx.runQuery(internal.data.getActiveMedications, {

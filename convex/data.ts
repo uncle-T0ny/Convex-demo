@@ -1,11 +1,8 @@
 import { v } from "convex/values";
 import { internalMutation, internalQuery } from "./_generated/server";
+import { toISODate } from "./lib/dates";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatDate(date: Date): string {
-  return date.toISOString().split("T")[0];
-}
 
 function daysFromNow(days: number): Date {
   const d = new Date();
@@ -235,7 +232,7 @@ export const seedSessionData = internalMutation({
   handler: async (ctx, { sessionId, tzOffset }) => {
     const now = Date.now();
     const cycleStartDate = now - 7 * 24 * 60 * 60 * 1000;
-    const today = formatDate(new Date());
+    const today = toISODate(new Date());
     const sid = sessionId as string;
 
     // Profile
@@ -307,7 +304,7 @@ export const seedSessionData = internalMutation({
     // Tasks — past completed (CD3-7 Letrozole)
     for (let cd = 3; cd <= 7; cd++) {
       const dayOffset = cd - 8;
-      const date = formatDate(daysFromNow(dayOffset));
+      const date = toISODate(daysFromNow(dayOffset));
       await ctx.db.insert("treatmentTasks", {
         sessionId: sid,
         title: "Take Letrozole 5mg",
@@ -359,7 +356,7 @@ export const seedSessionData = internalMutation({
         sessionId: sid,
         title: "Take prenatal vitamin",
         description: "Take one prenatal vitamin with breakfast",
-        scheduledDate: formatDate(daysFromNow(dayOffset)),
+        scheduledDate: toISODate(daysFromNow(dayOffset)),
         scheduledTime: "08:00",
         category: "medication",
         status: "pending",
@@ -372,7 +369,7 @@ export const seedSessionData = internalMutation({
       title: "Ovidrel trigger shot",
       description:
         "Administer Ovidrel 250mcg subcutaneous injection — timing will be confirmed at monitoring",
-      scheduledDate: formatDate(daysFromNow(4)),
+      scheduledDate: toISODate(daysFromNow(4)),
       scheduledTime: "22:00",
       category: "medication",
       status: "pending",
@@ -383,7 +380,7 @@ export const seedSessionData = internalMutation({
       sessionId: sid,
       title: "IUI procedure",
       description: "Intrauterine insemination at Bay Area Fertility Center",
-      scheduledDate: formatDate(daysFromNow(6)),
+      scheduledDate: toISODate(daysFromNow(6)),
       scheduledTime: "09:00",
       category: "appointment",
       status: "pending",
@@ -395,7 +392,7 @@ export const seedSessionData = internalMutation({
       title: "Start progesterone suppositories",
       description:
         "Begin progesterone 200mg vaginal suppository twice daily",
-      scheduledDate: formatDate(daysFromNow(7)),
+      scheduledDate: toISODate(daysFromNow(7)),
       scheduledTime: "08:00",
       category: "medication",
       status: "pending",
@@ -447,7 +444,7 @@ export const seedSessionData = internalMutation({
     // Symptom logs (3 past days)
     await ctx.db.insert("symptomLogs", {
       sessionId: sid,
-      date: formatDate(daysFromNow(-3)),
+      date: toISODate(daysFromNow(-3)),
       cycleDay: 5,
       symptoms: ["hot flashes", "headache"],
       mood: "anxious",
@@ -457,7 +454,7 @@ export const seedSessionData = internalMutation({
 
     await ctx.db.insert("symptomLogs", {
       sessionId: sid,
-      date: formatDate(daysFromNow(-2)),
+      date: toISODate(daysFromNow(-2)),
       cycleDay: 6,
       symptoms: ["fatigue", "bloating"],
       mood: "tired but hopeful",
@@ -466,7 +463,7 @@ export const seedSessionData = internalMutation({
 
     await ctx.db.insert("symptomLogs", {
       sessionId: sid,
-      date: formatDate(daysFromNow(-1)),
+      date: toISODate(daysFromNow(-1)),
       cycleDay: 7,
       symptoms: ["bloating", "mood swings"],
       mood: "emotional",

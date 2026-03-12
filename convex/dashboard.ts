@@ -1,10 +1,11 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
+import { toISODate } from "./lib/dates";
 
 export const getTodayOverview = query({
   args: { sessionId: v.id("sessions") },
   handler: async (ctx, { sessionId }) => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = toISODate();
     const now = Date.now();
     const sid = sessionId as string;
 
