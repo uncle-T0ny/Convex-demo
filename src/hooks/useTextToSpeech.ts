@@ -78,13 +78,13 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
         const client = new Cartesia({ apiKey: configRef.current.apiKey });
         const ws = await client.tts.websocket();
         ws.on("error", (e: unknown) => {
-          console.error("[TTS] WebSocket error:", e);
+          if (import.meta.env.DEV) console.error("[TTS] WebSocket error:", e);
           wsRef.current = null;
         });
         wsRef.current = ws;
       }
     } catch (e) {
-      console.warn("[TTS] warmup failed:", e);
+      if (import.meta.env.DEV) console.warn("[TTS] warmup failed:", e);
     }
   }, [getTtsConfig]);
 
@@ -164,7 +164,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
             }
           }
         } catch (e) {
-          console.warn("[TTS] receive loop ended:", e);
+          if (import.meta.env.DEV) console.warn("[TTS] receive loop ended:", e);
           // Only null out wsRef if it's still the same connection
           if (wsRef.current === loopWs) wsRef.current = null;
         }
@@ -173,7 +173,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
 
       setIsReady(true);
     } catch (e) {
-      console.warn("[TTS] Cartesia streaming failed:", e);
+      if (import.meta.env.DEV) console.warn("[TTS] Cartesia streaming failed:", e);
       setIsReady(true);
     }
   }, [stop, ensureWs]);
@@ -182,7 +182,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
   const pushText = useCallback((text: string) => {
     if (ttsCtxRef.current) {
       ttsCtxRef.current.push({ transcript: text }).catch((e) => {
-        console.warn("[TTS] pushText failed:", e);
+        if (import.meta.env.DEV) console.warn("[TTS] pushText failed:", e);
       });
     }
   }, []);
@@ -191,7 +191,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
   const endStream = useCallback(() => {
     if (ttsCtxRef.current) {
       ttsCtxRef.current.no_more_inputs().catch((e) => {
-        console.warn("[TTS] endStream failed:", e);
+        if (import.meta.env.DEV) console.warn("[TTS] endStream failed:", e);
       });
       ttsCtxRef.current = null;
     }
@@ -256,7 +256,7 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
                 }
               }
             } catch (e) {
-              console.warn("[TTS] receive loop ended:", e);
+              if (import.meta.env.DEV) console.warn("[TTS] receive loop ended:", e);
               if (wsRef.current === loopWs) wsRef.current = null;
             }
             player.markStreamComplete();
@@ -267,14 +267,14 @@ export function useTextToSpeech({ onEnd, onMetrics }: TextToSpeechOptions) {
             .push({ transcript: text })
             .then(() => ttsCtx.no_more_inputs())
             .catch((e) => {
-              console.warn("[TTS] push/no_more_inputs failed:", e);
+              if (import.meta.env.DEV) console.warn("[TTS] push/no_more_inputs failed:", e);
             });
         });
 
         await bufferReady;
         setIsReady(true);
       } catch (e) {
-        console.warn("[TTS] Cartesia failed during prepare, will use Web Speech fallback:", e);
+        if (import.meta.env.DEV) console.warn("[TTS] Cartesia failed during prepare, will use Web Speech fallback:", e);
         fallbackTextRef.current = text;
         setIsReady(true);
       }
