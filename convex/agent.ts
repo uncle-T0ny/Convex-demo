@@ -223,7 +223,7 @@ const logSymptomsTool: AnyTool = createTool({
 const getSymptomHistoryTool: AnyTool = createTool({
   description: "Get recent symptom logs",
   args: z.object({
-    limit: z.number().default(5).describe("Number of recent entries to return"),
+    limit: z.number().int().min(1).max(100).default(5).describe("Number of recent entries to return"),
   }),
   handler: async (ctx: Ctx, args: { limit: number }) => {
     const sessionId = await resolveSessionId(ctx);

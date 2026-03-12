@@ -175,12 +175,12 @@ export const logSymptoms = internalMutation({
 export const getLatestSymptoms = internalQuery({
   args: { sessionId: v.string(), limit: v.number() },
   handler: async (ctx, { sessionId, limit }) => {
-    const logs = await ctx.db
+    const boundedLimit = Math.min(limit, 100);
+    return await ctx.db
       .query("symptomLogs")
       .withIndex("by_session", (q) => q.eq("sessionId", sessionId))
       .order("desc")
-      .collect();
-    return logs.slice(0, limit);
+      .take(boundedLimit);
   },
 });
 
