@@ -27,7 +27,7 @@
 | 4.1 | Open | `src/App.tsx` | 8 refs managing implicit state machine | Encapsulate complex state in custom hook | — |
 | 4.2 | Open | `convex/chat.ts`, `convex/agent.ts`, `convex/data.ts` | Inconsistent error handling (throw vs `{success:false}` vs silent return) | Consistent error strategy per layer | — |
 | 4.3 | Open | `convex/data.ts` | Sequential DB inserts in seed data — no `Promise.all` | Batch independent async operations | — |
-| 4.4 | Open | `src/__tests__/components/*.test.tsx` | Weak assertions — `.toBeDefined()` on `getByText()` always passes | Use `.toBeInTheDocument()` (jest-dom) | — |
+| 4.4 | Fixed | `src/__tests__/components/*.test.tsx` | Weak assertions — `.toBeDefined()` on `getByText()` always passes | Use `.toBeInTheDocument()` (jest-dom) | 3659fb4 |
 | 4.5 | Open | `src/__tests__/hooks/useTextToSpeech.test.ts` | Conditional assertion silently passes when metrics don't fire | Always assert; no conditional expects | — |
 | 4.6 | Open | `src/__tests__/components/*.test.tsx` | Redundant `afterEach(cleanup)` — RTL auto-cleans | Remove unnecessary boilerplate | — |
 | **5. Naming & Consistency** | | | | | |
@@ -53,7 +53,7 @@
 | 7.11 | Skipped | `convex/chat.ts`, `convex/sessions.ts` | No rate limiting on `sendMessage` or `createSession` — LLM API abuse vector | OWASP A04 — Insecure Design; rate limiting | — (demo app, requires rate-limit infrastructure) |
 | 7.12 | Fixed | `src/hooks/useTextToSpeech.ts` | 11 verbose `console.error`/`console.warn` calls in production — leaks stack traces | OWASP A09 — information disclosure via error logging | c1204d2 |
 | **8. Test Quality** | | | | | |
-| 8.1 | Open | `src/__tests__/components/*.test.tsx` | `.toBeDefined()` misuse widespread across all component tests | Meaningful assertions | — |
+| 8.1 | Fixed | `src/__tests__/components/*.test.tsx` | `.toBeDefined()` misuse widespread across all component tests | Meaningful assertions | 3659fb4 |
 | 8.2 | Open | `src/__tests__/components/*.test.tsx` | `afterEach(cleanup)` redundant in all 4 component test files | Remove dead test boilerplate | — |
 | 8.3 | Open | `src/hooks/useSpeechRecognition.ts` | No tests for error paths (error, abort, permission-denied) | Test error paths and edge cases | — |
 | 8.4 | Open | `src/lib/StreamingAudioPlayer.ts` | No test for `stop()` releasing AudioContext | Test resource cleanup | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 138 Open, 0 In-progress, 19 Fixed, 2 Skipped
+**Totals:** 159 issues — 136 Open, 0 In-progress, 21 Fixed, 2 Skipped
 
 ---
 

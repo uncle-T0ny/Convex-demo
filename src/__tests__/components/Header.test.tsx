@@ -8,7 +8,7 @@ import type { AppStatus } from "../../App";
 describe("Header", () => {
   test('renders title "MyStoria"', () => {
     render(<Header status="idle" />);
-    expect(screen.getByText("MyStoria")).toBeDefined();
+    expect(screen.getByText("MyStoria")).toBeInTheDocument();
   });
 
   describe("status labels", () => {
@@ -21,7 +21,7 @@ describe("Header", () => {
 
     test.each(cases)('%s → "%s" label', (status, label) => {
       render(<Header status={status} />);
-      expect(screen.getByText(label)).toBeDefined();
+      expect(screen.getByText(label)).toBeInTheDocument();
     });
   });
 

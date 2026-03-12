@@ -9,7 +9,7 @@ describe("VoiceButton", () => {
     render(<VoiceButton status="idle" onClick={vi.fn()} disabled={false} />);
     expect(
       screen.getByRole("button", { name: "Start listening" }),
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   test("idle → gray background", () => {
@@ -43,7 +43,7 @@ describe("VoiceButton", () => {
     );
     expect(
       screen.getByRole("button", { name: "Stop listening" }),
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   test("listening → red background", () => {
@@ -80,7 +80,7 @@ describe("VoiceButton", () => {
     );
     expect(
       screen.getByRole("button", { name: "Stop speaking" }),
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   test("speaking → green background", () => {

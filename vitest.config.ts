@@ -13,5 +13,6 @@ export default defineConfig({
       ["convex/**", "edge-runtime"],
       ["src/**", "jsdom"],
     ],
+    setupFiles: ["src/__tests__/setup.ts"],
   },
 });

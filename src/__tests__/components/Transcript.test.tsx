@@ -21,14 +21,14 @@ describe("Transcript", () => {
     render(<Transcript messages={[]} status="idle" />);
     expect(
       screen.getByText(/tap to start the conversation/i),
-    ).toBeDefined();
+    ).toBeInTheDocument();
   });
 
   test("started with empty messages → loading mascot shown", () => {
     const { container } = render(
       <Transcript messages={[]} status="idle" started />,
     );
-    expect(container.querySelector(".animate-think")).toBeDefined();
+    expect(container.querySelector(".animate-think")).toBeInTheDocument();
   });
 
   test("only system/tool messages → loading mascot shown", () => {
@@ -42,17 +42,17 @@ describe("Transcript", () => {
         started
       />,
     );
-    expect(container.querySelector(".animate-think")).toBeDefined();
+    expect(container.querySelector(".animate-think")).toBeInTheDocument();
   });
 
   test("renders user messages", () => {
     render(<Transcript messages={[msg("user", "Hello")]} status="idle" started />);
-    expect(screen.getByText("Hello")).toBeDefined();
+    expect(screen.getByText("Hello")).toBeInTheDocument();
   });
 
   test("renders assistant messages", () => {
     render(<Transcript messages={[msg("assistant", "Hi there!")]} status="idle" started />);
-    expect(screen.getByText("Hi there!")).toBeDefined();
+    expect(screen.getByText("Hi there!")).toBeInTheDocument();
   });
 
   test("filters out system messages", () => {

@@ -7,12 +7,12 @@ import { TextInput } from "../../components/TextInput";
 describe("TextInput", () => {
   test("renders input with placeholder", () => {
     render(<TextInput onSend={vi.fn()} disabled={false} />);
-    expect(screen.getByPlaceholderText("Type a message...")).toBeDefined();
+    expect(screen.getByPlaceholderText("Type a message...")).toBeInTheDocument();
   });
 
   test("renders Send button", () => {
     render(<TextInput onSend={vi.fn()} disabled={false} />);
-    expect(screen.getByRole("button", { name: /send/i })).toBeDefined();
+    expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument();
   });
 
   test("calls onSend with text on submit", () => {
