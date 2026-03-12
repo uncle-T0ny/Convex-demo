@@ -13,9 +13,22 @@ function daysFromNow(days: number): Date {
   return d;
 }
 
-function todayAt(hours: number, minutes = 0): number {
+/**
+ * Create a UTC timestamp that represents a given local time.
+ * @param daysOffset — days from today (0 = today)
+ * @param hours — local hour (0-23)
+ * @param minutes — local minutes
+ * @param tzOffset — browser's getTimezoneOffset() in minutes (positive = west of UTC)
+ */
+function localTime(
+  daysOffset: number,
+  hours: number,
+  minutes: number,
+  tzOffset: number,
+): number {
   const d = new Date();
-  d.setHours(hours, minutes, 0, 0);
+  d.setDate(d.getDate() + daysOffset);
+  d.setUTCHours(hours + tzOffset / 60, minutes, 0, 0);
   return d.getTime();
 }
 
@@ -208,8 +221,8 @@ export const addPrepQuestion = internalMutation({
 // ─── Seed Data ───────────────────────────────────────────────────────────────
 
 export const seedSessionData = internalMutation({
-  args: { sessionId: v.id("sessions") },
-  handler: async (ctx, { sessionId }) => {
+  args: { sessionId: v.id("sessions"), tzOffset: v.number() },
+  handler: async (ctx, { sessionId, tzOffset }) => {
     const now = Date.now();
     const cycleStartDate = now - 7 * 24 * 60 * 60 * 1000;
     const today = formatDate(new Date());
@@ -382,7 +395,7 @@ export const seedSessionData = internalMutation({
     await ctx.db.insert("appointments", {
       sessionId: sid,
       title: "Monitoring ultrasound",
-      dateTime: todayAt(10, 0),
+      dateTime: localTime(0, 10, 0, tzOffset),
       location: "Bay Area Fertility Center, Suite 200",
       doctorName: "Dr. Patel",
       notes: "Follicle check and uterine lining measurement after Letrozole",
@@ -396,7 +409,7 @@ export const seedSessionData = internalMutation({
     await ctx.db.insert("appointments", {
       sessionId: sid,
       title: "Final monitoring and trigger shot timing",
-      dateTime: daysFromNow(4).setHours(9, 0, 0, 0),
+      dateTime: localTime(4, 9, 0, tzOffset),
       location: "Bay Area Fertility Center, Suite 200",
       doctorName: "Dr. Patel",
       notes: "Final follicle check before trigger shot",
@@ -410,7 +423,7 @@ export const seedSessionData = internalMutation({
     await ctx.db.insert("appointments", {
       sessionId: sid,
       title: "IUI procedure",
-      dateTime: daysFromNow(6).setHours(9, 0, 0, 0),
+      dateTime: localTime(6, 9, 0, tzOffset),
       location: "Bay Area Fertility Center, Suite 200",
       doctorName: "Dr. Patel",
       notes: "Intrauterine insemination procedure",

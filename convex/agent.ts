@@ -2,8 +2,10 @@ import { Agent, createTool } from "@convex-dev/agent";
 import { z } from "zod/v4";
 import { components, internal } from "./_generated/api";
 import { anthropic } from "@ai-sdk/anthropic";
+import { cerebras } from "@ai-sdk/cerebras";
+import type { LanguageModel } from "ai";
 import type { ToolCtx } from "@convex-dev/agent";
-import type { DataModel } from "./_generated/dataModel";
+import type { DataModel, Id } from "./_generated/dataModel";
 
 type Ctx = ToolCtx<DataModel>;
 
@@ -359,6 +361,17 @@ const getPartnerUpdateTool: AnyTool = createTool({
   },
 });
 
+const resetConversationTool: AnyTool = createTool({
+  description:
+    "Reset the conversation and start fresh when the user asks to start over, reset, or begin a new conversation",
+  args: z.object({}),
+  handler: async (ctx: Ctx) => {
+    const sessionId = await resolveSessionId(ctx) as Id<"sessions">;
+    await ctx.runMutation(internal.sessions.requestReset, { sessionId });
+    return { success: true, message: "Starting a fresh conversation" };
+  },
+});
+
 const MYSTORIA_INSTRUCTIONS = `You are MyStoria, a warm and compassionate fertility treatment companion. You help patients manage their treatment journey with empathy, knowledge, and encouragement.
 
 Your personality:
@@ -383,29 +396,50 @@ Important rules:
 - When the patient reports symptoms, offer to log them
 - Be encouraging and normalize the emotional aspects of fertility treatment
 - If this is the start of a conversation, proactively greet the patient by name, mention their current cycle day, and briefly summarize what's on their agenda today
+- If the patient asks to "start over", "reset", or "new conversation", use the resetConversation tool
 
 Your responses will be spoken aloud with an expressive voice that conveys emotion.
 Write in a way that carries natural emotional tone — the voice engine will pick up on your warmth, sympathy, or excitement from context.`;
 
-export const voiceAgent = new Agent(components.agent, {
-  name: "MyStoria",
-  languageModel: anthropic("claude-haiku-4-5-20251001"),
-  instructions: MYSTORIA_INSTRUCTIONS,
-  tools: {
-    getTodaysTasks,
-    getTasksForDate,
-    completeTask: completeTaskTool,
-    createTask: createTaskTool,
-    skipTask: skipTaskTool,
-    getProfile: getProfileTool,
-    getMedications: getMedicationsTool,
-    logSymptoms: logSymptomsTool,
-    getSymptomHistory: getSymptomHistoryTool,
-    getUpcomingAppointments: getUpcomingAppointmentsTool,
-    addAppointmentQuestion: addAppointmentQuestionTool,
-    generateAppointmentSummary: generateAppointmentSummaryTool,
-    getCycleTimeline: getCycleTimelineTool,
-    getPartnerUpdate: getPartnerUpdateTool,
-  },
-  maxSteps: 8,
-});
+function getLanguageModel(): LanguageModel {
+  const provider = process.env.LLM_PROVIDER ?? "anthropic";
+  const model = process.env.LLM_MODEL;
+  console.log(`[LLM] provider=${provider} model=${model ?? "(default)"}`);
+  switch (provider) {
+    case "cerebras":
+      return cerebras(model ?? "gpt-oss-120b");
+    case "anthropic":
+    default:
+      return anthropic(model ?? "claude-haiku-4-5-20251001");
+  }
+}
+
+export function createVoiceAgent(additionalContext?: string) {
+  const instructions = additionalContext
+    ? MYSTORIA_INSTRUCTIONS +
+      `\n\n[Pre-fetched session context — do NOT call getProfile or getTodaysTasks tools for this data]\n${additionalContext}`
+    : MYSTORIA_INSTRUCTIONS;
+  return new Agent(components.agent, {
+    name: "MyStoria",
+    languageModel: getLanguageModel(),
+    instructions,
+    tools: {
+      getTodaysTasks,
+      getTasksForDate,
+      completeTask: completeTaskTool,
+      createTask: createTaskTool,
+      skipTask: skipTaskTool,
+      getProfile: getProfileTool,
+      getMedications: getMedicationsTool,
+      logSymptoms: logSymptomsTool,
+      getSymptomHistory: getSymptomHistoryTool,
+      getUpcomingAppointments: getUpcomingAppointmentsTool,
+      addAppointmentQuestion: addAppointmentQuestionTool,
+      generateAppointmentSummary: generateAppointmentSummaryTool,
+      getCycleTimeline: getCycleTimelineTool,
+      getPartnerUpdate: getPartnerUpdateTool,
+      resetConversation: resetConversationTool,
+    },
+    maxSteps: 8,
+  });
+}

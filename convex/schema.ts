@@ -7,6 +7,7 @@ export default defineSchema({
     threadId: v.optional(v.string()),
     profileId: v.optional(v.string()),
     createdAt: v.number(),
+    resetRequested: v.optional(v.boolean()),
   }).index("by_threadId", ["threadId"]),
 
   patientProfiles: defineTable({
