@@ -9,11 +9,10 @@ export const getTodayOverview = query({
     const sid = sessionId as string;
 
     // Profile
-    const profiles = await ctx.db
+    const profile = await ctx.db
       .query("patientProfiles")
       .withIndex("by_session", (q) => q.eq("sessionId", sid))
-      .collect();
-    const profile = profiles[0] ?? null;
+      .first();
 
     // Today's tasks
     const todayTasks = await ctx.db

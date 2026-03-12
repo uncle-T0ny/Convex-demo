@@ -37,11 +37,10 @@ function localTime(
 export const getProfile = internalQuery({
   args: { sessionId: v.string() },
   handler: async (ctx, { sessionId }) => {
-    const profiles = await ctx.db
+    return await ctx.db
       .query("patientProfiles")
       .withIndex("by_session", (q) => q.eq("sessionId", sessionId))
-      .collect();
-    return profiles[0] ?? null;
+      .first();
   },
 });
 
