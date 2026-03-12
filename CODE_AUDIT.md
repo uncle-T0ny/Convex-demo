@@ -69,7 +69,7 @@
 | 11.1 | Open | `convex/schema.ts`, `convex/data.ts` | `profileId` write-only field — never read | Remove dead schema fields | — |
 | 11.2 | Open | `convex/schema.ts` | `category`/`status` are untyped `v.string()` — no enforcement | Use `v.union(v.literal(...))` for enums | — |
 | 11.3 | Open | `convex/schema.ts`, `convex/sessions.ts`, `convex/dashboard.ts` | Inconsistent `sessionId` typing — `v.string()` vs `v.id("sessions")` | Consistent ID typing throughout | — |
-| 11.4 | Open | `convex/schema.ts` | Missing compound index `["sessionId", "dateTime"]` on appointments | Index-backed filtering > JS filtering | — |
+| 11.4 | Fixed | `convex/schema.ts` | Missing compound index `["sessionId", "dateTime"]` on appointments | Index-backed filtering > JS filtering | 26acba6 |
 | 11.5 | Open | `convex/data.ts` | `getAllTasks` returns in arbitrary order — used for timeline | Explicit sort or ordered index | — |
 | **12. E2E Test Issues** | | | | | |
 | 12.1 | Fixed | `e2e/*.spec.ts` (all 7) | All E2E tests incompatible with "Tap to start" flow — will timeout | Tests must match app UX flow | 0672c84 |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 136 Open, 0 In-progress, 21 Fixed, 2 Skipped
+**Totals:** 159 issues — 135 Open, 0 In-progress, 22 Fixed, 2 Skipped
 
 ---
 

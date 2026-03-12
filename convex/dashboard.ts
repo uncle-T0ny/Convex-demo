@@ -24,14 +24,12 @@ export const getTodayOverview = query({
       .collect();
 
     // Next appointment
-    const appointments = await ctx.db
+    const nextAppointment = await ctx.db
       .query("appointments")
-      .withIndex("by_session", (q) => q.eq("sessionId", sid))
-      .collect();
-    const upcoming = appointments
-      .filter((a) => a.dateTime >= now)
-      .sort((a, b) => a.dateTime - b.dateTime);
-    const nextAppointment = upcoming[0] ?? null;
+      .withIndex("by_session_dateTime", (q) =>
+        q.eq("sessionId", sid).gte("dateTime", now),
+      )
+      .first();
 
     return { profile, todayTasks, nextAppointment };
   },

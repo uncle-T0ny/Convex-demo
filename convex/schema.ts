@@ -56,7 +56,9 @@ export default defineSchema({
     doctorName: v.optional(v.string()),
     notes: v.optional(v.string()),
     prepQuestions: v.optional(v.array(v.string())),
-  }).index("by_session", ["sessionId"]),
+  })
+    .index("by_session", ["sessionId"])
+    .index("by_session_dateTime", ["sessionId", "dateTime"]),
 
   symptomLogs: defineTable({
     sessionId: v.string(),

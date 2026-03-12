@@ -190,13 +190,12 @@ export const getUpcomingAppointments = internalQuery({
   args: { sessionId: v.string() },
   handler: async (ctx, { sessionId }) => {
     const now = Date.now();
-    const appointments = await ctx.db
+    return await ctx.db
       .query("appointments")
-      .withIndex("by_session", (q) => q.eq("sessionId", sessionId))
+      .withIndex("by_session_dateTime", (q) =>
+        q.eq("sessionId", sessionId).gte("dateTime", now),
+      )
       .collect();
-    return appointments
-      .filter((a) => a.dateTime >= now)
-      .sort((a, b) => a.dateTime - b.dateTime);
   },
 });
 
