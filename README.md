@@ -59,6 +59,8 @@ Defined as the `AppStatus` type in `src/App.tsx`.
 - **Scheduler** — `ctx.scheduler.runAfter(0, ...)` triggers async work (e.g., thread initialization) after session creation
 - **`@convex-dev/agent`** — manages LLM conversation threads and message persistence
 
+The main system prompt for the AI agent lives in `convex/agent.ts` (`MYSTORIA_INSTRUCTIONS` constant).
+
 Backend env vars (API keys) are set in the Convex dashboard, not in `.env` files. Only `VITE_CONVEX_URL` goes in `.env.local`.
 
 ## Quick Start
