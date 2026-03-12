@@ -2,4 +2,4 @@
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src 'self' https://*.convex.cloud wss://*.convex.cloud wss://*.cartesia.ai; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-eval'; connect-src 'self' https://*.convex.cloud wss://*.convex.cloud https://*.cartesia.ai wss://*.cartesia.ai; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' blob: data:; worker-src 'self' blob:; frame-ancestors 'none'
