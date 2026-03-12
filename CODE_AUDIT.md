@@ -78,7 +78,7 @@
 | 12.4 | Open | `e2e/latency.spec.ts` | Latency test has no failure threshold — can never regress | Set performance budgets | — |
 | **13. Frontend Bugs** | | | | | |
 | 13.1 | Fixed | `src/components/TextInput.tsx` | `onSend(text)` sends untrimmed — guard checks `.trim()` but sends raw | Trim before passing to callback | 4fa9b31 |
-| 13.2 | Open | `src/main.tsx` | No runtime validation of `VITE_CONVEX_URL` — `as string` hides undefined | Fail fast on missing env vars | — |
+| 13.2 | Fixed | `src/main.tsx` | No runtime validation of `VITE_CONVEX_URL` — `as string` hides undefined | Fail fast on missing env vars | 0aabf28 |
 | 13.3 | Open | `src/lib/extractCompleteSentences.ts` | Regex fails on abbreviations (`Dr.`), ellipsis (`...`), concatenated words | Robust sentence boundary detection | — |
 | **14. Backend Test Coverage** | | | | | |
 | 14.1 | Open | `convex/__tests__/` | Only `sessions.ts` tested — `data.ts`, `chat.ts`, `agent.ts`, `dashboard.ts` untested (~400 LOC) | Test critical business logic | — |
@@ -185,7 +185,7 @@
 | S99 | Open | `src/hooks/useTextToSpeech.ts` | Inline `CartesiaWS` type alias — used once | Inline single-use types | — |
 | S100 | Open | `src/__tests__/hooks/useSpeechRecognition.test.ts` | Remove `MockInstance` interface — let TypeScript infer | Trust type inference | — |
 
-**Totals:** 159 issues — 141 Open, 0 In-progress, 16 Fixed, 2 Skipped
+**Totals:** 159 issues — 140 Open, 0 In-progress, 17 Fixed, 2 Skipped
 
 ---
 
