@@ -3,16 +3,9 @@ import {
   StreamingAudioPlayer,
   type StreamingAudioPlayerOptions,
 } from "../../lib/StreamingAudioPlayer";
+import { MockAudioBufferSourceNode } from "../helpers/audioMocks";
 
 // --- Mock AudioContext infrastructure ---
-
-class MockAudioBufferSourceNode {
-  buffer: { duration: number } | null = null;
-  onended: (() => void) | null = null;
-  connect = vi.fn();
-  start = vi.fn();
-  stop = vi.fn();
-}
 
 class MockAudioContext {
   sampleRate: number;

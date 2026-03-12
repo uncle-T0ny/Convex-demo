@@ -1,6 +1,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, expect, test, vi, afterEach, beforeEach } from "vitest";
 import { useTextToSpeech } from "../../hooks/useTextToSpeech";
+import { MockAudioBufferSourceNode } from "../helpers/audioMocks";
 
 // Mock getTtsConfig action
 const mockGetTtsConfig = vi
@@ -61,14 +62,6 @@ vi.mock("@cartesia/cartesia-js", () => {
 });
 
 // Mock AudioContext
-class MockAudioBufferSourceNode {
-  buffer: AudioBuffer | null = null;
-  onended: (() => void) | null = null;
-  connect = vi.fn();
-  start = vi.fn();
-  stop = vi.fn();
-}
-
 class MockAudioBuffer {
   numberOfChannels = 1;
   length: number;
